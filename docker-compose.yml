@@ -1,0 +1,8 @@
+version: '3'
+services:
+  imeter_frontend:
+    image: imeter_frontend:1
+    build: 
+      context: ./
+      dockerfile: ./Dockerfile
+
