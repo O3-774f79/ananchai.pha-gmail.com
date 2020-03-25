@@ -49,19 +49,19 @@ function Layout(props) {
             .then(async res => {
                 await setTranformer(res.data)
                 await setHeaderTable([
-                    { "text": "Transformer ID", "show": true },
-                    { "text": "Meter ID", "show": true },
-                    { "text": "Meter Type", "show": true },
-                    { "text": "Rate Type", "show": true },
-                    { "text": "Location", "show": true },
-                    { "text": "Date/Time", "show": true },
-                    { "text": "Voltage L1", "show": true },
-                    { "text": "Voltage L2", "show": true },
-                    { "text": "Voltage L3", "show": true },
-                    { "text": "Active power", "show": true },
-                    { "text": "Reactive power", "show": true },
-                    { "text": "Active energy ", "show": true },
-                    { "text": "Reactive energy ", "show": true },
+                    { label: 'Transformer ID', key: 'TranfomerID', status: true },
+                    { label: 'Meter ID', key: 'MeterID', status: true },
+                    { label: 'Meter Type', key: 'MeterType', status: true },
+                    { label: 'Rate Type', key: 'RateType', status: true },
+                    { label: 'Location', key: 'Location', status: true },
+                    { label: 'Date/Time', key: 'created', status: true },
+                    { label: 'Voltage L1', key: 'Sensors.V1', status: true },
+                    { label: 'Voltage L2', key: 'Sensors.V2', status: true },
+                    { label: 'Voltage L3', key: 'Sensors.V3', status: true },
+                    { label: 'Active power', key: 'Sensors.KW', status: true },
+                    { label: 'Reactive power', key: 'Sensors.KVAR', status: true },
+                    { label: 'Active energy', key: 'Sensors.KWH', status: true },
+                    { label: 'Reactive energy', key: 'Sensors.KVARH', status: true },
                 ])
                 await InquirySensorAll()
                 await setLoad(true);
@@ -328,14 +328,21 @@ function Layout(props) {
             setMeterSetReport([])
         }
     }
-    const onHeaderReportChange = (text) => {
-        let updateHeader = headerTable.map(item => {
-            if (text == item.text) {
-                item.show = !item.show
-            }
-            return item
-        })
-        setHeaderTable(updateHeader)
+    const onHeaderReportChange = (status, value) => {
+        console.log(status)
+        console.log(value)
+        headerTable.map(item => { if (item.key === value) { item.status = !status; return item } })
+        setHeaderTable(headerTable)
+        console.log(headerTable)
+        // headerTable.map(item => { if (item.key == value) { item.status == !text; return item } })
+        // let updateHeader = headerTable.map(item => {
+        //     if (text == item.text) {
+        //         dataExport.map(item => delete item[text])
+        //         console.log(dataExport)
+        //         item.show = !item.show
+        //     }
+        //     return item
+        // })
     }
     const inquiryDataAvailability = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
@@ -391,7 +398,7 @@ function Layout(props) {
             })
     }
     const searchHistiry = () => {
-        axios.get('http://localhost:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
             .then(async res => {
                 res.data.history.map(item => {
                     return (
@@ -526,8 +533,8 @@ function Layout(props) {
                                 <form class="form-inline">
                                     {headerTable.map(item =>
                                         <div class="custom-control custom-checkbox custom-control-inline">
-                                            <input type="checkbox" class="custom-control-input" id={item.text} value={item.show} onChange={(e) => onHeaderReportChange(item.text, e.target.value)} />
-                                            <label class="custom-control-label" for={item.text}>{item.text}</label>
+                                            <input type="checkbox" class="custom-control-input" id={item.key} value={item.key} statue={item.status} checked={item.status} onChange={(e) => onHeaderReportChange(item.status, e.target.value)} />
+                                            <label class="custom-control-label" for={item.key}>{item.label}</label>
                                         </div>
                                     )}
                                 </form>
@@ -543,10 +550,10 @@ function Layout(props) {
                                     <thead class="thead-violet">
                                         <tr class="text-center">
                                             {headerTable.map(item => {
-                                                if (item.show) {
-                                                    return (
-                                                        <th scope="col" class="text-left">{item.text}</th>)
-                                                }
+                                                // if (item.show) {
+                                                return (
+                                                    <th scope="col" class="text-left">{item.label}</th>)
+                                                // }
                                             }
                                             )}
                                         </tr>
@@ -576,21 +583,7 @@ function Layout(props) {
                             <div class="w-100 clearfix"></div>
                             <div class="row justify-content-end">
                                 <div class=" col-md-3 col-sm-12">
-                                    <CSVLink data={dataExport} headers={[
-                                        { label: 'Transformer ID', key: 'TranfomerID' },
-                                        { label: 'Meter ID', key: 'MeterID' },
-                                        { label: 'Meter Type', key: 'MeterType' },
-                                        { label: 'Rate Type', key: 'RateType' },
-                                        { label: 'Location', key: 'Location' },
-                                        { label: 'Date/Time', key: 'created' },
-                                        { label: 'Voltage L1', key: 'Sensors.V1' },
-                                        { label: 'Voltage L2', key: 'Sensors.V2' },
-                                        { label: 'Voltage L3', key: 'Sensors.V3' },
-                                        { label: 'Active power', key: 'Sensors.KW' },
-                                        { label: 'Reactive power', key: 'Sensors.KVAR' },
-                                        { label: 'Active energy', key: 'Sensors.KWH' },
-                                        { label: 'Reactive energy', key: 'Sensors.KVARH' },
-                                    ]} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
+                                    <CSVLink data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
                                 </div>
                                 <div class="col-md-3  col-sm-12">
                                     <button class="btn btn-primary btn-block mb-2" disabled>   Excel Export  </button>
