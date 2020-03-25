@@ -207,6 +207,9 @@ function Layout(props) {
             },
             // alternateGridColor: '#FDFFD5',
         },
+        credits: {
+            enabled: false
+        },
     }
     const EnergyOptions = {
         chart: {
@@ -264,13 +267,15 @@ function Layout(props) {
                     valueSuffix: " kVarh"
                 },
             }
-        ]
+        ], credits: {
+            enabled: false
+        }
     }
     const GoogleMapExample = withGoogleMap(props => (
         <GoogleMap
             defaultCenter={{ lat: 13.752801, lng: 100.501587 }}
             defaultZoom={10}>
-            {/* <MarkerClusterer
+            <MarkerClusterer
                 // onClick={props.onMarkerClustererClick}
                 averageCenter
                 enableRetinaIcons
@@ -285,13 +290,13 @@ function Layout(props) {
                         />
                     )
                 }))}
-            </MarkerClusterer> */}
-            {tranformers.map(item => item.MeterInfo.map(loca => {
+            </MarkerClusterer>
+            {/* {tranformers.map(item => item.MeterInfo.map(loca => {
                 return (
                     <Marker options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => onMarkerClick}
                     />
                 )
-            }))}
+            }))} */}
         </GoogleMap>
     ));
     const checkStatus = (lasttime, time, sec) => {
@@ -575,10 +580,10 @@ function Layout(props) {
                                         { label: 'Reactive power', key: 'Sensors.KVAR' },
                                         { label: 'Active energy', key: 'Sensors.KWH' },
                                         { label: 'Reactive energy', key: 'Sensors.KVARH' },
-                                    ]} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> Excel Export </button></CSVLink>
+                                    ]} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
                                 </div>
                                 <div class="col-md-3  col-sm-12">
-                                    <button class="btn btn-primary btn-block mb-2">   CSV Export  </button>
+                                    <button class="btn btn-primary btn-block mb-2" disabled>   Excel Export  </button>
 
                                 </div>
                             </div>

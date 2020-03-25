@@ -18,7 +18,7 @@ const Login = props => {
     }
     if (login === true) {
         console.log("else");
-        return <Redirect to={'/'} push={true}/>
+        return <Redirect to={'/'} push={true} />
     }
     return (
         <div>
@@ -41,7 +41,9 @@ const Login = props => {
                     position: "fixed",
                     left: 0,
                     bottom: 0,
-                    width: "100%"
+                    width: "100%",
+                    zIndex: -1
+
                 }}>
                     <img src={bgLogin} width={"100%"} />
                 </div>
