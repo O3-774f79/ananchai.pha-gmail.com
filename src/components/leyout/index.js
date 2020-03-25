@@ -9,7 +9,7 @@ import meterOn from '../../img/Meter.svg'
 import axios from 'axios'
 import HighchartsReact from 'highcharts-react-official'
 import Highcharts from 'highcharts'
-import { Menu } from 'antd';
+import { Menu, Checkbox } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
 import { CSVLink } from "react-csv";
 import GaugeChart from 'react-gauge-chart'
@@ -48,8 +48,6 @@ function Layout(props) {
         axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
             .then(async res => {
                 await setTranformer(res.data)
-                let metersDes = await res.data.map(item => item.MeterInfo);
-                console.log("meters", metersDes[0]);
                 await setHeaderTable([
                     { "text": "Transformer ID", "show": true },
                     { "text": "Meter ID", "show": true },
@@ -276,17 +274,15 @@ function Layout(props) {
             defaultCenter={{ lat: 13.752801, lng: 100.501587 }}
             defaultZoom={10}>
             <MarkerClusterer
-                // onClick={props.onMarkerClustererClick}
                 averageCenter
                 enableRetinaIcons
                 maxZoom={19}
                 minimumClusterSize={2}
-            // gridSize={60}
             >
                 {tranformers.map(item => item.MeterInfo.map(loca => {
                     console.log("loca", loca)
                     return (
-                        <Marker options={{ icon: meterOn, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => onMarkerClick}
+                        <Marker options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => onMarkerClick}
                         />
                     )
                 }))}
@@ -362,6 +358,24 @@ function Layout(props) {
                 setLoad(true)
             })
     }
+    const inquiryallActivePower = () => {
+        axios.get('http://52.163.210.101:44000/dataAVA/allActivePower')
+            .then(async res => {
+            })
+            .catch(err => {
+                // setError(err.message);
+                setLoad(true)
+            })
+    }
+    const inquiryallActiveEnergy = () => {
+        axios.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
+            .then(async res => {
+            })
+            .catch(err => {
+                // setError(err.message);
+                setLoad(true)
+            })
+    }
     const openMeterDetail = (meter) => {
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
@@ -377,14 +391,23 @@ function Layout(props) {
             })
     }
     const searchHistiry = () => {
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
+        axios.get('http://localhost:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
             .then(async res => {
-                setDataExport(res.data)
+                res.data.history.map(item => {
+                    return (
+                        item["address"] = res.data.thingDetail.address,
+                        item["MeterID"] = res.data.thingDetail.MeterID,
+                        item["MeterType"] = res.data.thingDetail.MeterType,
+                        item["RateType"] = res.data.thingDetail.RateType,
+                        item["Location"] = res.data.thingDetail.Location,
+                        item["TranfomerID"] = TranformerIDReport
+                    )
+                }
+                )
+                setDataExport(res.data.history)
             })
             .catch(err => {
                 console.log(err)
-                // setError(err.message);
-                // setLoad(true)
             })
     }
     const renderSwitch = (page) => {
@@ -392,6 +415,7 @@ function Layout(props) {
             case 'home':
                 return (
                     <span>
+                        {/* {inquiryallActivePower(), inquiryallActiveEnergy()} */}
                         <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "center" }}>
                             <div style={{ width: "24%", marginRight: 2 }}>
                                 <div class="card" >
@@ -482,13 +506,6 @@ function Layout(props) {
                                         <DatePicker class="form-control" selected={startDate} onChange={date => setStartDate(date)} dateFormat="dd/MM/yyyy" />
                                         <i class="material-icons">
                                             calendar_today</i>
-                                        {/* <input type="text" class="form-control mydatepicker" placeholder="mm/dd/yyyy" /> */}
-                                        {/* <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="material-icons">
-                                                    calendar_today</i>
-                                            </span>
-                                        </div> */}
                                     </div>
                                 </div>
                                 <div class="col-md-1 pt-2 "><label class="pt-4">  to</label></div>
@@ -498,13 +515,6 @@ function Layout(props) {
                                         <DatePicker class="form-control" selected={endDate} onChange={date => seEndDate(date)} dateFormat="dd/MM/yyyy" />
                                         <i class="material-icons">
                                             calendar_today</i>
-                                        {/* <input type="text" class="form-control mydatepicker" placeholder="mm/dd/yyyy" />
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="material-icons">
-                                                    calendar_today</i>
-                                            </span>
-                                        </div> */}
                                     </div>
                                 </div>
                             </div>
@@ -544,11 +554,11 @@ function Layout(props) {
                                     <tbody>
                                         {dataExport.map(item =>
                                             <tr class="text-center">
-                                                <td>{TranformerIDReport}</td>
-                                                <td>{MeterIDReport}</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td>{item.TranfomerID}</td>
+                                                <td>{item.MeterID}</td>
+                                                <td>{item.MeterType}</td>
+                                                <td>{item.RateType}</td>
+                                                <td>{item.Location[0]},{item.Location[1]}</td>
                                                 <th scope="row">{item.created}</th>
                                                 <td>{item.Sensors.V1}</td>
                                                 <td>{item.Sensors.V2}</td>
@@ -567,10 +577,10 @@ function Layout(props) {
                             <div class="row justify-content-end">
                                 <div class=" col-md-3 col-sm-12">
                                     <CSVLink data={dataExport} headers={[
-                                        { label: 'Transformer ID', key: 'Transformer ID' },
-                                        { label: 'Meter ID', key: 'Meter ID' },
-                                        { label: 'Meter Type', key: 'Meter Type' },
-                                        { label: 'Rate Type', key: 'Rate Type' },
+                                        { label: 'Transformer ID', key: 'TranfomerID' },
+                                        { label: 'Meter ID', key: 'MeterID' },
+                                        { label: 'Meter Type', key: 'MeterType' },
+                                        { label: 'Rate Type', key: 'RateType' },
                                         { label: 'Location', key: 'Location' },
                                         { label: 'Date/Time', key: 'created' },
                                         { label: 'Voltage L1', key: 'Sensors.V1' },
@@ -611,10 +621,10 @@ function Layout(props) {
                                 <div class="card h-100">
                                     <div class="card-body text-left">
                                         <h4 class=""> Instantaneous value : </h4>
-                                        <div style={{ display: "flex", justifyContent: 'center' }}>
+                                        <div style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap" }}>
                                             <div> <div style={{ textAlign: "center" }}>Voltage Line1</div>
                                                 <GaugeChart id="gauge-chart2"
-                                                    style={{ width: 150 }}
+                                                    style={{ width: 120 }}
                                                     nrOfLevels={20}
                                                     percent={meterDetail.detail ? (meterDetail.detail?.Sensors.V1 / 100) : 0}
                                                     arcPadding={0.02}
@@ -626,7 +636,7 @@ function Layout(props) {
                                             <div>
                                                 <div style={{ textAlign: "center" }}>Voltage Line2</div>
                                                 <GaugeChart id="gauge-chart5"
-                                                    style={{ width: 150 }}
+                                                    style={{ width: 120 }}
                                                     nrOfLevels={420}
                                                     arcsLength={[0.3, 0.5, 0.2]}
                                                     colors={['#5BE12C', '#F5CD19', '#EA4228']}
@@ -639,7 +649,7 @@ function Layout(props) {
                                             <div>
                                                 <div style={{ textAlign: "center" }}>Voltage Line3</div>
                                                 <GaugeChart id="gauge-chart1"
-                                                    style={{ width: 150 }}
+                                                    style={{ width: 120 }}
                                                     nrOfLevels={420}
                                                     arcsLength={[0.3, 0.5, 0.2]}
                                                     colors={['#5BE12C', '#F5CD19', '#EA4228']}
@@ -649,11 +659,11 @@ function Layout(props) {
                                                     arcPadding={0.02}
                                                 />
                                             </div>
-                                        </div>
-                                        <div style={{ display: "flex", justifyContent: 'center', padding: 3 }}>
+                                            {/* </div>
+                                        <div style={{ display: "flex", justifyContent: 'center', padding: 3 }}> */}
                                             <div> <div style={{ textAlign: "center" }}>Current Line1</div>
                                                 <GaugeChart id="gauge-chart7"
-                                                    style={{ width: 150 }}
+                                                    style={{ width: 120 }}
                                                     nrOfLevels={20}
                                                     percent={meterDetail.detail ? (meterDetail.detail?.Sensors.I1 / 100) : 0}
                                                     arcPadding={0.02}
@@ -665,7 +675,7 @@ function Layout(props) {
                                             <div>
                                                 <div style={{ textAlign: "center" }}>Current Line2</div>
                                                 <GaugeChart id="gauge-chart8"
-                                                    style={{ width: 150 }}
+                                                    style={{ width: 120 }}
                                                     nrOfLevels={420}
                                                     arcsLength={[0.3, 0.5, 0.2]}
                                                     colors={['#5BE12C', '#F5CD19', '#EA4228']}
@@ -678,7 +688,7 @@ function Layout(props) {
                                             <div>
                                                 <div style={{ textAlign: "center" }}>Current Line3</div>
                                                 <GaugeChart id="gauge-chart9"
-                                                    style={{ width: 150 }}
+                                                    style={{ width: 120 }}
                                                     nrOfLevels={420}
                                                     arcsLength={[0.3, 0.5, 0.2]}
                                                     colors={['#5BE12C', '#F5CD19', '#EA4228']}
