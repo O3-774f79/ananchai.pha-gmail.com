@@ -21,7 +21,7 @@ const { MarkerClusterer } = require("react-google-maps/lib/components/addons/Mar
 const { SubMenu } = Menu;
 
 function Layout(props) {
-    const [hamberger, setHamberger] = useState(false);
+    const [hamberger, setHamberger] = useState(true);
     const [page, setPage] = useState("home")
     const [tranformers, setTranformer] = useState([])
     const [startDate, setStartDate] = useState(new Date());
@@ -76,9 +76,8 @@ function Layout(props) {
     const GoogleMapExample = withGoogleMap(props => (
         <GoogleMap
             defaultCenter={{ lat: 13.752801, lng: 100.501587 }}
-            defaultZoom={10}
-        >
-            <MarkerClusterer
+            defaultZoom={10}>
+            {/* <MarkerClusterer
                 // onClick={props.onMarkerClustererClick}
                 averageCenter
                 enableRetinaIcons
@@ -93,7 +92,14 @@ function Layout(props) {
                         />
                     )
                 }))}
-            </MarkerClusterer>
+            </MarkerClusterer> */}
+            {tranformers.map(item => item.MeterInfo.map(loca => {
+                console.log("loca", loca)
+                return (
+                    <Marker options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => onMarkerClick}
+                    />
+                )
+            }))}
         </GoogleMap>
     ));
     const checkStatus = (lasttime, time, sec) => {
@@ -109,7 +115,7 @@ function Layout(props) {
     const InquirySensorAll = (IMEI) => {
         let endDate = new Date(new Date().setSeconds(new Date().getSeconds() + 50))
         let startDate = new Date(new Date().getTime())
-        axios.get('http://localhost:44000/apiRoute/Things/history?' + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
             .then(res => {
                 console.log(res)
             }).catch(res => {
@@ -142,7 +148,7 @@ function Layout(props) {
         setHeaderTable(updateHeader)
     }
     const inquiryDataAvailability = () => {
-        axios.get('http://localhost:44000/dataAVA/dataAvailability')
+        axios.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
             .then(async res => {
                 setDataAvailability(res.data.value)
             })
@@ -153,7 +159,7 @@ function Layout(props) {
     }
 
     const inquirySystemAvailability = () => {
-        axios.get('http://localhost:44000/dataAVA/systemAvailability')
+        axios.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
             .then(async res => {
                 setSystemAvailability(res.data.value)
             })
@@ -177,8 +183,7 @@ function Layout(props) {
             })
     }
     const searchHistiry = () => {
-        console.log(headerTable);
-        axios.get('http://localhost:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
             .then(async res => {
                 setDataExport(res.data)
             })
@@ -367,13 +372,13 @@ function Layout(props) {
                                         { label: 'Rate Type', key: 'Rate Type' },
                                         { label: 'Location', key: 'Location' },
                                         { label: 'Date/Time', key: 'created' },
-                                        { label: 'Voltage L1', key: 'Sensor.V1' },
-                                        { label: 'Voltage L2', key: 'Sensor.V2' },
-                                        { label: 'Voltage L3', key: 'Sensor.V3' },
-                                        { label: 'Active power', key: 'Sensor.KW' },
-                                        { label: 'Reactive power', key: 'Sensor.KVAR' },
-                                        { label: 'Active energy', key: 'Sensor.KWH' },
-                                        { label: 'Reactive energy', key: 'Sensor.KVARH' },
+                                        { label: 'Voltage L1', key: 'Sensors.V1' },
+                                        { label: 'Voltage L2', key: 'Sensors.V2' },
+                                        { label: 'Voltage L3', key: 'Sensors.V3' },
+                                        { label: 'Active power', key: 'Sensors.KW' },
+                                        { label: 'Reactive power', key: 'Sensors.KVAR' },
+                                        { label: 'Active energy', key: 'Sensors.KWH' },
+                                        { label: 'Reactive energy', key: 'Sensors.KVARH' },
                                     ]} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> Excel Export </button></CSVLink>
                                 </div>
                                 <div class="col-md-3  col-sm-12">
@@ -537,7 +542,7 @@ function Layout(props) {
                             <img src={logoPEA} class="mx-auto d-flex" />
                         </div>
                         <div class="sidebar-menu">
-                            <h6 class="ml-4"> ยินดีตอนรับ </h6>
+                            <h6 class="ml-4"> ยินดีต้อนรับ </h6>
                             <Menu
                                 style={{ width: "100%" }}
                                 mode="inline"
@@ -566,7 +571,7 @@ function Layout(props) {
                                 {tranformers.map(item => {
                                     return (
                                         <SubMenu
-                                            key="sub1"
+                                            key={item.TranformerID}
                                             title={
                                                 <a href="#">
                                                     <img src={transformerLogo} height="18" width="auto" style={{ marginRight: 5 }} />
