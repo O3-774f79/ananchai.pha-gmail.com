@@ -39,6 +39,8 @@ function Layout(props) {
     const [systemAvailability, setSystemAvailability] = useState(0)
     const [startDateSet, setStartDateSet] = useState("")
     const [endDateSet, setEndDateSet] = useState("")
+    const [activePower, setActivePower] = useState(0)
+    const [activeEnergy, setAllActiveEnergy] = useState(0)
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
     const onMarkerClick = (evt) => {
@@ -273,7 +275,7 @@ function Layout(props) {
         <GoogleMap
             defaultCenter={{ lat: 13.752801, lng: 100.501587 }}
             defaultZoom={10}>
-            <MarkerClusterer
+            {/* <MarkerClusterer
                 averageCenter
                 enableRetinaIcons
                 maxZoom={19}
@@ -286,13 +288,13 @@ function Layout(props) {
                         />
                     )
                 }))}
-            </MarkerClusterer>
-            {/* {tranformers.map(item => item.MeterInfo.map(loca => {
+            </MarkerClusterer> */}
+            {tranformers.map(item => item.MeterInfo.map(loca => {
                 return (
                     <Marker options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => onMarkerClick}
                     />
                 )
-            }))} */}
+            }))}
         </GoogleMap>
     ));
     const checkStatus = (lasttime, time, sec) => {
@@ -329,11 +331,8 @@ function Layout(props) {
         }
     }
     const onHeaderReportChange = (status, value) => {
-        console.log(status)
-        console.log(value)
-        headerTable.map(item => { if (item.key === value) { item.status = !status; return item } })
-        setHeaderTable(headerTable)
-        console.log(headerTable)
+        // headerTable.map(item => { if (item.key === value) { item.status = !status; return item } })
+        // setHeaderTable(headerTable)
         // headerTable.map(item => { if (item.key == value) { item.status == !text; return item } })
         // let updateHeader = headerTable.map(item => {
         //     if (text == item.text) {
@@ -368,6 +367,7 @@ function Layout(props) {
     const inquiryallActivePower = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/allActivePower')
             .then(async res => {
+                setActivePower(res.data.value)
             })
             .catch(err => {
                 // setError(err.message);
@@ -377,6 +377,7 @@ function Layout(props) {
     const inquiryallActiveEnergy = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
             .then(async res => {
+                setAllActiveEnergy(res.data.value)
             })
             .catch(err => {
                 // setError(err.message);
@@ -422,13 +423,13 @@ function Layout(props) {
             case 'home':
                 return (
                     <span>
-                        {/* {inquiryallActivePower(), inquiryallActiveEnergy()} */}
+                        {inquiryallActivePower(), inquiryallActiveEnergy()}
                         <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "center" }}>
                             <div style={{ width: "24%", marginRight: 2 }}>
                                 <div class="card" >
                                     <div class="card-body text-center">
                                         <h4 class=""> All Active Power </h4>
-                                        <h5 class="text-primary">0 MW</h5>
+                                        <h5 class="text-primary">{activePower} MW</h5>
                                     </div>
                                 </div>
 
@@ -437,7 +438,7 @@ function Layout(props) {
                                 <div class="card">
                                     <div class="card-body text-center">
                                         <h4 class=""> All Active Energy </h4>
-                                        <h5 class="text-primary">0 MW</h5>
+                                        <h5 class="text-primary">{activeEnergy} MW</h5>
                                     </div>
                                 </div>
                             </div>
