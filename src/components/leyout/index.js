@@ -94,7 +94,6 @@ function Layout(props) {
                 }))}
             </MarkerClusterer> */}
             {tranformers.map(item => item.MeterInfo.map(loca => {
-                console.log("loca", loca)
                 return (
                     <Marker options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => onMarkerClick}
                     />
@@ -121,12 +120,9 @@ function Layout(props) {
             }).catch(res => {
 
             })
-        // console.log(MeterDataArray)
-        // let MeterIMIE = MeterDataArray.map(meter => { return meter.MeterIMEI })
     }
     const handleClickLogout = () => {
         localStorage.clear("login")
-        // return (<Redirect to={'/login'} />)
     }
     const onSelectTranformerIDReportChange = (e) => {
         let meterList = tranformers.filter(item => item.TranformerID === e)[0]
