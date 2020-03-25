@@ -7,6 +7,8 @@ import reportLogo from '../../img/i-export.svg'
 import meterOff from '../../img/Meter-off.svg'
 import meterOn from '../../img/Meter.svg'
 import axios from 'axios'
+import HighchartsReact from 'highcharts-react-official'
+import Highcharts from 'highcharts'
 import { Menu } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
 import { CSVLink } from "react-csv";
@@ -35,6 +37,8 @@ function Layout(props) {
     const [dataExport, setDataExport] = useState([])
     const [dataAvailability, setDataAvailability] = useState(0)
     const [systemAvailability, setSystemAvailability] = useState(0)
+    const [startDateSet, setStartDateSet] = useState("")
+    const [endDateSet, setEndDateSet] = useState("")
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
     const onMarkerClick = (evt) => {
@@ -71,8 +75,197 @@ function Layout(props) {
                 setError(err.message);
                 setLoad(true)
             })
+        let endDate = new Date()
+        let startDate = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+        setStartDateSet(startDate.toISOString())
+        setEndDateSet(endDate.toISOString())
     }, []);
+    const VoltageOption = {
+        title: {
+            text: null
+        }, chart: {
+            type: "spline",
+            zoomType: 'x'
+        },
+        time: {
+            timezoneOffset: -420
+        },
+        title: {
+            text: ""
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: '%e  %b'
+            },
+            min: new Date(startDateSet).getTime(),
+            max: new Date(endDateSet).getTime()
+        },
+        yAxis: {
+            title: {
+                text: "Voltage Profile (V)"
+            }
+        },
+        plotOptions: {
+            spline: {
+                lineWidth: 3,
+                states: {
+                    hover: {
+                        lineWidth: 4
+                    }
+                },
+                marker: {
+                    enabled: false
+                },
+            }
+        },
+        series:
+            [
+                {
+                    name: 'Voltage L1',
+                    data: [],
+                    color: "#8085e9",
+                    tooltip: {
+                        valueSuffix: " V"
+                    },
+                },
+                {
+                    name: 'Voltage L2',
+                    data: [],
+                    color: "#f7a35c",
+                    tooltip: {
+                        valueSuffix: " V"
+                    },
+                },
+                {
+                    name: 'Voltage L3',
+                    data: [], color: "#f15c80",
+                    tooltip: {
+                        valueSuffix: " V"
+                    },
+                },
 
+            ], credits: {
+                enabled: false
+            },
+    }
+    const loadprofileOptions = {
+        chart: {
+            type: "spline",
+            zoomType: 'x'
+        },
+        time: {
+            timezoneOffset: -420
+        },
+        plotOptions: {
+            spline: {
+                lineWidth: 3,
+                states: {
+                    hover: {
+                        lineWidth: 4
+                    }
+                },
+                marker: {
+                    enabled: false
+                },
+                // pointInterval: 3600000, // one hour
+                // pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)
+            }
+        },
+        series: [
+            {
+                name: 'Active Power',
+                data: [],
+                color: "#f45b5b",
+                tooltip: {
+                    valueSuffix: " kW"
+                },
+            },
+            {
+                name: 'Reactive Power',
+                data: [],
+                color: "#2b908f",
+                tooltip: {
+                    valueSuffix: " kVar"
+                },
+            }
+        ],
+        title: {
+            text: ""
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: '%e  %b'
+            },
+            min: new Date(startDateSet).getTime(),
+            max: new Date(endDateSet).getTime()
+        },
+        yAxis: {
+            title: {
+                text: "Load Profile (kW, kVar)"
+            },
+            // alternateGridColor: '#FDFFD5',
+        },
+    }
+    const EnergyOptions = {
+        chart: {
+            type: "spline",
+            zoomType: 'x'
+        },
+        time: {
+            timezoneOffset: -420
+        },
+        title: {
+            text: ""
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: '%e  %b'
+            },
+            min: new Date(startDateSet).getTime(),
+            max: new Date(endDateSet).getTime()
+        },
+        yAxis: {
+            title: {
+                text: "Energy Profile (kWh, kVarh)"
+            }
+        },
+        plotOptions: {
+            spline: {
+                lineWidth: 3,
+                states: {
+                    hover: {
+                        lineWidth: 4
+                    }
+                },
+                marker: {
+                    enabled: false
+                },
+                // pointInterval: 3600000, // one hour
+                // pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)
+            }
+        },
+        series: [
+            {
+                name: 'Active Energy',
+                data: [],
+                color: "#f45b5b",
+                tooltip: {
+                    valueSuffix: " kWh"
+                },
+            },
+            {
+                name: 'Reactive Energy',
+                data: [],
+                color: "#2b908f",
+                tooltip: {
+                    valueSuffix: " kVarh"
+                },
+            }
+        ]
+    }
     const GoogleMapExample = withGoogleMap(props => (
         <GoogleMap
             defaultCenter={{ lat: 13.752801, lng: 100.501587 }}
@@ -228,16 +421,23 @@ function Layout(props) {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <div>
+                            <div>
+                                About Status <br />
+                                <div style={{ display: "flex" }}>
+                                    <div style={{ marginRight: 10 }}><img src={meterOn} height={50} /> <div>Connect</div></div>
+                                    <div><img src={meterOff} height={50} /> <div>Disconnected</div></div>
+                                </div>
+
+                            </div>
                             <GoogleMapExample
                                 containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
                                 mapElement={<div style={{ height: `100%` }} />}
                                 isMarkerShown
                             />
                         </div>
-                    </span>
+                    </span >
                 )
             case 'report':
                 return (
@@ -386,131 +586,150 @@ function Layout(props) {
                     </div >)
             case "meterdetail":
                 return (
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 ">
-                            <div class="card h-100">
-                                <div class="card-body text-left pb-4 pb-4">
-                                    <h4 class=""> More Info</h4>
-                                    <p> Owner : <span class="text-Primary">{meterDetail.Owner}</span></p>
-                                    <p> Meter01 ID : <span class="text-Primary">{meterDetail.MeterID}</span></p>
-                                    <p> Meter type : <span class="text-Primary">{meterDetail.MeterType}</span></p>
-                                    <p>Rate type : <span class="text-Primary">{meterDetail.RateType}</span></p>
-                                    <p> Location : <span class="text-Primary">{meterDetail.Location[0]},{meterDetail.Location[1]}</span></p>
-                                    <p>Address : <span class="text-Primary">{meterDetail.Address}</span></p>
-                                    <p></p>
+                    <div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 ">
+                                <div class="card h-100">
+                                    <div class="card-body text-left pb-4 pb-4">
+                                        <h4 class=""> More Info</h4>
+                                        <p> Owner : <span class="text-Primary">{meterDetail.Owner}</span></p>
+                                        <p> Meter01 ID : <span class="text-Primary">{meterDetail.MeterID}</span></p>
+                                        <p> Meter type : <span class="text-Primary">{meterDetail.MeterType}</span></p>
+                                        <p>Rate type : <span class="text-Primary">{meterDetail.RateType}</span></p>
+                                        <p> Location : <span class="text-Primary">{meterDetail.Location[0]},{meterDetail.Location[1]}</span></p>
+                                        <p>Address : <span class="text-Primary">{meterDetail.Address}</span></p>
+                                        <p></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 ">
+                                <div class="card h-100">
+                                    <div class="card-body text-left">
+                                        <h4 class=""> Instantaneous value : </h4>
+                                        <div style={{ display: "flex", justifyContent: 'center' }}>
+                                            <div> <div style={{ textAlign: "center" }}>Voltage Line1</div>
+                                                <GaugeChart id="gauge-chart2"
+                                                    style={{ width: 150 }}
+                                                    nrOfLevels={20}
+                                                    percent={meterDetail.detail ? (meterDetail.detail?.Sensors.V1 / 100) : 0}
+                                                    arcPadding={0.02}
+                                                    arcsLength={[0.4, 0.2, 0.4]}
+                                                    textColor={"#000000"}
+                                                    formatTextValue={value => value + 'V'}
+                                                />
+                                            </div>
+                                            <div>
+                                                <div style={{ textAlign: "center" }}>Voltage Line2</div>
+                                                <GaugeChart id="gauge-chart5"
+                                                    style={{ width: 150 }}
+                                                    nrOfLevels={420}
+                                                    arcsLength={[0.3, 0.5, 0.2]}
+                                                    colors={['#5BE12C', '#F5CD19', '#EA4228']}
+                                                    percent={meterDetail.detail ? meterDetail.detail?.Sensors.V2 / 100 : 0}
+                                                    textColor={"#000000"}
+                                                    formatTextValue={value => value + 'V'}
+                                                    arcPadding={0.02}
+                                                />
+                                            </div>
+                                            <div>
+                                                <div style={{ textAlign: "center" }}>Voltage Line3</div>
+                                                <GaugeChart id="gauge-chart1"
+                                                    style={{ width: 150 }}
+                                                    nrOfLevels={420}
+                                                    arcsLength={[0.3, 0.5, 0.2]}
+                                                    colors={['#5BE12C', '#F5CD19', '#EA4228']}
+                                                    percent={meterDetail.detail ? meterDetail.detail?.Sensors.V3 / 100 : 0}
+                                                    textColor={"#000000"}
+                                                    formatTextValue={value => value + 'V'}
+                                                    arcPadding={0.02}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: 'center', padding: 3 }}>
+                                            <div> <div style={{ textAlign: "center" }}>Current Line1</div>
+                                                <GaugeChart id="gauge-chart7"
+                                                    style={{ width: 150 }}
+                                                    nrOfLevels={20}
+                                                    percent={meterDetail.detail ? (meterDetail.detail?.Sensors.I1 / 100) : 0}
+                                                    arcPadding={0.02}
+                                                    arcsLength={[0.4, 0.2, 0.4]}
+                                                    textColor={"#000000"}
+                                                    formatTextValue={value => value + 'V'}
+                                                />
+                                            </div>
+                                            <div>
+                                                <div style={{ textAlign: "center" }}>Current Line2</div>
+                                                <GaugeChart id="gauge-chart8"
+                                                    style={{ width: 150 }}
+                                                    nrOfLevels={420}
+                                                    arcsLength={[0.3, 0.5, 0.2]}
+                                                    colors={['#5BE12C', '#F5CD19', '#EA4228']}
+                                                    percent={meterDetail.detail ? meterDetail.detail?.Sensors.I2 / 100 : 0}
+                                                    textColor={"#000000"}
+                                                    formatTextValue={value => value + 'V'}
+                                                    arcPadding={0.02}
+                                                />
+                                            </div>
+                                            <div>
+                                                <div style={{ textAlign: "center" }}>Current Line3</div>
+                                                <GaugeChart id="gauge-chart9"
+                                                    style={{ width: 150 }}
+                                                    nrOfLevels={420}
+                                                    arcsLength={[0.3, 0.5, 0.2]}
+                                                    colors={['#5BE12C', '#F5CD19', '#EA4228']}
+                                                    percent={meterDetail.detail ? meterDetail.detail?.Sensors.I3 / 100 : 0}
+                                                    textColor={"#000000"}
+                                                    formatTextValue={value => value + 'V'}
+                                                    arcPadding={0.02}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 ">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <div class="row">
+                                            <div class="col">
+                                                <h4 class="">  Total Active Power <br /> </h4>
+                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KW : 0} kW</h5>
+                                                <hr />
+                                                <h4 class="">  Total Active Energy <br /> </h4>
+                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KWH : 0} kW</h5>
+
+                                            </div>
+
+
+                                            <div class="col">
+                                                <h4 class="">  Total Reactive Power <br /> </h4>
+                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KVAR : 0} Kvar</h5>
+                                                <hr />
+                                                <h4 class="">  Total Reactive Energy <br /> </h4>
+                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KVARH : 0} Kvarh</h5>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 ">
-                            <div class="card h-100">
-                                <div class="card-body text-left">
-                                    <h4 class=""> Instantaneous value : </h4>
-                                    <div style={{ display: "flex", justifyContent: 'center' }}>
-                                        <div> <div style={{ textAlign: "center" }}>Voltage Line1</div>
-                                            <GaugeChart id="gauge-chart2"
-                                                style={{ width: 150 }}
-                                                nrOfLevels={20}
-                                                percent={meterDetail.detail ? (meterDetail.detail?.Sensors.V1 / 100) : 0}
-                                                arcPadding={0.02}
-                                                arcsLength={[0.4, 0.2, 0.4]}
-                                                textColor={"#000000"}
-                                                formatTextValue={value => value + 'V'}
-                                            />
-                                        </div>
-                                        <div>
-                                            <div style={{ textAlign: "center" }}>Voltage Line2</div>
-                                            <GaugeChart id="gauge-chart5"
-                                                style={{ width: 150 }}
-                                                nrOfLevels={420}
-                                                arcsLength={[0.3, 0.5, 0.2]}
-                                                colors={['#5BE12C', '#F5CD19', '#EA4228']}
-                                                percent={meterDetail.detail ? meterDetail.detail?.Sensors.V2 / 100 : 0}
-                                                textColor={"#000000"}
-                                                formatTextValue={value => value + 'V'}
-                                                arcPadding={0.02}
-                                            />
-                                        </div>
-                                        <div>
-                                            <div style={{ textAlign: "center" }}>Voltage Line3</div>
-                                            <GaugeChart id="gauge-chart1"
-                                                style={{ width: 150 }}
-                                                nrOfLevels={420}
-                                                arcsLength={[0.3, 0.5, 0.2]}
-                                                colors={['#5BE12C', '#F5CD19', '#EA4228']}
-                                                percent={meterDetail.detail ? meterDetail.detail?.Sensors.V3 / 100 : 0}
-                                                textColor={"#000000"}
-                                                formatTextValue={value => value + 'V'}
-                                                arcPadding={0.02}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div style={{ display: "flex", justifyContent: 'center', padding: 3 }}>
-                                        <div> <div style={{ textAlign: "center" }}>Current Line1</div>
-                                            <GaugeChart id="gauge-chart7"
-                                                style={{ width: 150 }}
-                                                nrOfLevels={20}
-                                                percent={meterDetail.detail ? (meterDetail.detail?.Sensors.I1 / 100) : 0}
-                                                arcPadding={0.02}
-                                                arcsLength={[0.4, 0.2, 0.4]}
-                                                textColor={"#000000"}
-                                                formatTextValue={value => value + 'V'}
-                                            />
-                                        </div>
-                                        <div>
-                                            <div style={{ textAlign: "center" }}>Current Line2</div>
-                                            <GaugeChart id="gauge-chart8"
-                                                style={{ width: 150 }}
-                                                nrOfLevels={420}
-                                                arcsLength={[0.3, 0.5, 0.2]}
-                                                colors={['#5BE12C', '#F5CD19', '#EA4228']}
-                                                percent={meterDetail.detail ? meterDetail.detail?.Sensors.I2 / 100 : 0}
-                                                textColor={"#000000"}
-                                                formatTextValue={value => value + 'V'}
-                                                arcPadding={0.02}
-                                            />
-                                        </div>
-                                        <div>
-                                            <div style={{ textAlign: "center" }}>Current Line3</div>
-                                            <GaugeChart id="gauge-chart9"
-                                                style={{ width: 150 }}
-                                                nrOfLevels={420}
-                                                arcsLength={[0.3, 0.5, 0.2]}
-                                                colors={['#5BE12C', '#F5CD19', '#EA4228']}
-                                                percent={meterDetail.detail ? meterDetail.detail?.Sensors.I3 / 100 : 0}
-                                                textColor={"#000000"}
-                                                formatTextValue={value => value + 'V'}
-                                                arcPadding={0.02}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div>
+                            <HighchartsReact
+                                highcharts={Highcharts}
+                                options={VoltageOption}
+                            />
                         </div>
-                        <div class="col-lg-4 col-md-6 ">
-                            <div class="card h-100">
-                                <div class="card-body text-center">
-                                    <div class="row">
-                                        <div class="col">
-                                            <h4 class="">  Total Active Power <br /> </h4>
-                                            <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KW : 0} kW</h5>
-                                            <hr />
-                                            <h4 class="">  Total Active Energy <br /> </h4>
-                                            <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KWH : 0} kW</h5>
-
-                                        </div>
-
-
-                                        <div class="col">
-                                            <h4 class="">  Total Reactive Power <br /> </h4>
-                                            <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KVAR : 0} Kvar</h5>
-                                            <hr />
-                                            <h4 class="">  Total Reactive Energy <br /> </h4>
-                                            <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KVARH : 0} Kvarh</h5>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+                        <div>
+                            <HighchartsReact
+                                highcharts={Highcharts}
+                                options={loadprofileOptions}
+                            />
+                        </div>
+                        <div>
+                            <HighchartsReact
+                                highcharts={Highcharts}
+                                options={EnergyOptions}
+                            />
                         </div>
                     </div>
                 )
