@@ -11,3 +11,9 @@
     font-weight: bold;
     background-color: rgba(255, 255, 255, 0.8); /*dim the background*/
   }
+  .react-datepicker__input-container {
+    width: 100%;
+  }
+  .ant-checkbox-group-item {
+    display: flex
+  }

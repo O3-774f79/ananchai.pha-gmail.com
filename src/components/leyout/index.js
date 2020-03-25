@@ -6,18 +6,20 @@ import transformerLogo from '../../img/i-transformer.svg'
 import reportLogo from '../../img/i-export.svg'
 import meterOff from '../../img/Meter-off.svg'
 import meterOn from '../../img/Meter.svg'
+import imgNotFound from '../../img/img-not-found.png'
 import axios from 'axios'
 import HighchartsReact from 'highcharts-react-official'
 import Highcharts from 'highcharts'
-import { Menu, Checkbox } from 'antd';
+import { Menu, Checkbox, Table, Row, Col } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
-import { CSVLink } from "react-csv";
+import { CSVLink, CSVDownload } from "react-csv";
 import GaugeChart from 'react-gauge-chart'
 import DatePicker from 'react-datepicker'
 import {
     BrowserRouter as Router, Link
 } from 'react-router-dom'
 import 'antd/dist/antd.css';
+import './index.css'
 import "react-datepicker/dist/react-datepicker.css";
 const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
 const { SubMenu } = Menu;
@@ -25,7 +27,9 @@ const { SubMenu } = Menu;
 function Layout(props) {
     const [hamberger, setHamberger] = useState(true);
     const [page, setPage] = useState("home")
+    const [openWindow, setOpenWindow] = useState(false)
     const [tranformers, setTranformer] = useState([])
+    const [meters, setMeters] = useState([])
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, seEndDate] = useState(new Date());
     const [meterDetail, setMeterdetail] = useState({})
@@ -34,6 +38,9 @@ function Layout(props) {
     const [MeterIDReport, setMeterIDReport] = useState(0)
     const [MeterSetReport, setMeterSetReport] = useState([])
     const [headerTable, setHeaderTable] = useState([])
+    const [tableHeader, setTableHeader] = useState(["TranfomerID", "MeterID", 'MeterType', 'Rate Type', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
+    const [tableHeaderSet, setTableHeaderSet] = useState(["TranfomerID", "MeterID", 'MeterType', 'Rate Type', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
+    const [tableHeaderSelect, setTableHeaderSelect] = useState([])
     const [dataExport, setDataExport] = useState([])
     const [dataAvailability, setDataAvailability] = useState(0)
     const [systemAvailability, setSystemAvailability] = useState(0)
@@ -49,27 +56,35 @@ function Layout(props) {
     useEffect(() => {
         axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
             .then(async res => {
+                let data = []
+                await res.data.map(item => item.MeterInfo.map(meter => {
+                    meter["status"] = meterOff
+                    data.push(meter)
+                }
+                ))
                 await setTranformer(res.data)
+                await setMeters(data)
                 await setHeaderTable([
-                    { label: 'Transformer ID', key: 'TranfomerID', status: true },
-                    { label: 'Meter ID', key: 'MeterID', status: true },
-                    { label: 'Meter Type', key: 'MeterType', status: true },
-                    { label: 'Rate Type', key: 'RateType', status: true },
-                    { label: 'Location', key: 'Location', status: true },
-                    { label: 'Date/Time', key: 'created', status: true },
-                    { label: 'Voltage L1', key: 'Sensors.V1', status: true },
-                    { label: 'Voltage L2', key: 'Sensors.V2', status: true },
-                    { label: 'Voltage L3', key: 'Sensors.V3', status: true },
-                    { label: 'Active power', key: 'Sensors.KW', status: true },
-                    { label: 'Reactive power', key: 'Sensors.KVAR', status: true },
-                    { label: 'Active energy', key: 'Sensors.KWH', status: true },
-                    { label: 'Reactive energy', key: 'Sensors.KVARH', status: true },
+                    { label: 'Transformer ID', key: 'TranfomerID', dataIndex: "TranfomerID", status: true },
+                    { label: 'Meter ID', key: 'MeterID', dataIndex: "MeterID", status: true },
+                    { label: 'Meter Type', key: 'MeterType', dataIndex: "MeterType", status: true },
+                    { label: 'Rate Type', key: 'RateType', dataIndex: "RateType", status: true },
+                    { label: 'Location', key: 'Location', dataIndex: "Location", status: true },
+                    { label: 'Date/Time', key: 'created', dataIndex: "created", status: true },
+                    { label: 'Voltage L1', key: 'Sensors.V1', dataIndex: "Sensors.V1", status: true },
+                    { label: 'Voltage L2', key: 'Sensors.V2', dataIndex: "TranfomerID", status: true },
+                    { label: 'Voltage L3', key: 'Sensors.V3', dataIndex: "TranfomerID", status: true },
+                    { label: 'Active power', key: 'Sensors.KW', dataIndex: "TranfomerID", status: true },
+                    { label: 'Reactive power', key: 'Sensors.KVAR', dataIndex: "TranfomerID", status: true },
+                    { label: 'Active energy', key: 'Sensors.KWH', dataIndex: "TranfomerID", status: true },
+                    { label: 'Reactive energy', key: 'Sensors.KVARH', dataIndex: "TranfomerID", status: true },
                 ])
-                await InquirySensorAll()
                 await setLoad(true);
-                setInterval(inquiryDataAvailability, 50000);
-                setInterval(inquirySystemAvailability, 50000);
-
+                setInterval(inquiryDataAvailability, 60000);
+                setInterval(InquirySensorAll(data), 60000)
+                setInterval(inquirySystemAvailability, 60000);
+                setInterval(inquiryallActivePower, 60000)
+                setInterval(inquiryallActiveEnergy, 60000)
             })
             .catch(err => {
                 setError(err.message);
@@ -274,46 +289,53 @@ function Layout(props) {
     const GoogleMapExample = withGoogleMap(props => (
         <GoogleMap
             defaultCenter={{ lat: 13.752801, lng: 100.501587 }}
-            defaultZoom={10}>
+            defaultZoom={10}
+        >
             {/* <MarkerClusterer
                 averageCenter
                 enableRetinaIcons
-                maxZoom={19}
-                minimumClusterSize={2}
-            >
-                {tranformers.map(item => item.MeterInfo.map(loca => {
-                    console.log("loca", loca)
-                    return (
-                        <Marker options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => onMarkerClick}
-                        />
-                    )
-                }))}
-            </MarkerClusterer> */}
-            {tranformers.map(item => item.MeterInfo.map(loca => {
+                gridSize={10}
+                maxZoom={10}
+            // defaultMinimumClusterSize={19}
+            > */}
+            {props.mark.map(loca => {
                 return (
-                    <Marker options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => onMarkerClick}
-                    />
+                    <Marker key={loca.MeterID} options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
+                        {/* {openWindow && <InfoWindow onCloseClick={() => setOpenWindow(false)}>
+                            <div>
+                                {" "}
+                                    Controlled zoom:
+                                </div>
+                        </InfoWindow>} */}
+                    </Marker>
                 )
-            }))}
+            })}
+            {/* </MarkerClusterer> */}
+            {/* {props.mark.map(loca => {
+                return (
+                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: "20px", height: "20px" } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}> */}
+            {/* {openWindow && <InfoWindow onCloseClick={() => setOpenWindow(false)}>
+                            <div>
+                                {" "}
+          Controlled zoom: {props.zoom}
+                            </div>
+                        </InfoWindow>} */}
+
+            {/* </Marker> */}
         </GoogleMap>
     ));
-    const checkStatus = (lasttime, time, sec) => {
-        let data1 = new Date(time).getTime()
-        let data2 = new Date(lasttime).getTime()
-        let diffdate = (data1 - data2) / 1000
-        if (diffdate <= sec && 0 > diffdate) {
-            return true
-        } else {
-            return false
-        }
-    }
-    const InquirySensorAll = (IMEI) => {
-        let endDate = new Date(new Date().setSeconds(new Date().getSeconds() + 50))
-        let startDate = new Date(new Date().getTime())
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
+    const InquirySensorAll = (data) => {
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/checkOnline')
             .then(res => {
-                console.log(res)
-            }).catch(res => {
+                console.log(res.data);
+                data.map(meter =>
+                    res.data.map(rec => {
+                        if (meter.MeterIMEI == rec) meter.status = meterOn
+                    }))
+                setMeters(data)
+                console.log("res", data)
+            }).catch(err => {
+                console.log("err", err)
 
             })
     }
@@ -330,7 +352,8 @@ function Layout(props) {
             setMeterSetReport([])
         }
     }
-    const onHeaderReportChange = (status, value) => {
+    const onHeaderReportChange = (checkedValues) => {
+        setTableHeader(checkedValues)
         // headerTable.map(item => { if (item.key === value) { item.status = !status; return item } })
         // setHeaderTable(headerTable)
         // headerTable.map(item => { if (item.key == value) { item.status == !text; return item } })
@@ -388,7 +411,6 @@ function Layout(props) {
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
                 meter["detail"] = res.data
-                console.log(meter)
                 await setMeterdetail(meter)
                 await setLoad(true);
                 setPage("meterdetail")
@@ -408,7 +430,14 @@ function Layout(props) {
                         item["MeterType"] = res.data.thingDetail.MeterType,
                         item["RateType"] = res.data.thingDetail.RateType,
                         item["Location"] = res.data.thingDetail.Location,
-                        item["TranfomerID"] = TranformerIDReport
+                        item["TranfomerID"] = TranformerIDReport,
+                        item["V1"] = item.Sensors.V1,
+                        item["V2"] = item.Sensors.V2,
+                        item["V3"] = item.Sensors.V3,
+                        item["KVAR"] = item.Sensors.KVAR,
+                        item["KW"] = item.Sensors.KW,
+                        item["KWH"] = item.Sensors.KWH,
+                        item["KVARH"] = item.Sensors.KVARH
                     )
                 }
                 )
@@ -423,7 +452,6 @@ function Layout(props) {
             case 'home':
                 return (
                     <span>
-                        {inquiryallActivePower(), inquiryallActiveEnergy()}
                         <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "center" }}>
                             <div style={{ width: "24%", marginRight: 2 }}>
                                 <div class="card" >
@@ -460,17 +488,19 @@ function Layout(props) {
                             </div>
                         </div>
                         <div>
-                            <div>
-                                About Status <br />
-                                <div style={{ display: "flex" }}>
-                                    <div style={{ marginRight: 10 }}><img src={meterOn} height={50} /> <div>Connect</div></div>
-                                    <div><img src={meterOff} height={50} /> <div>Disconnected</div></div>
+                            <div style={{ marginBottom: -160, display: "block" }}>
+                                <div style={{ position: "relative", zIndex: 1,top:70,left:20,width:100,backgroundColor:"#FAF7F7"}}>
+                                    About Status <br />
+                                    <div style={{}}>
+                                        <div style={{ marginRight: 10 }}><img src={meterOn} height={50} /> <div>Connect</div></div>
+                                        <div><img src={meterOff} height={50} /> <div>Disconnected</div></div>
+                                    </div>
                                 </div>
-
                             </div>
                             <GoogleMapExample
                                 containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
                                 mapElement={<div style={{ height: `100%` }} />}
+                                mark={meters}
                                 isMarkerShown
                             />
                         </div>
@@ -511,7 +541,7 @@ function Layout(props) {
                                 <div class="col-md-4 ">
                                     <label for="text" class="text-left">Start Date</label>
                                     <div class="input-group">
-                                        <DatePicker class="form-control" selected={startDate} onChange={date => setStartDate(date)} dateFormat="dd/MM/yyyy" />
+                                        <DatePicker class="form-control" selected={startDate} onChange={date => setStartDate(date)} dateFormat="dd/MM/yyyy" style={{ width: "100%" }} />
                                         <i class="material-icons">
                                             calendar_today</i>
                                     </div>
@@ -532,12 +562,13 @@ function Layout(props) {
                                 <br />
                                 <h3>Select Header Report   </h3><span class="small text-secondary">*defualt Show all </span> <br /><br />
                                 <form class="form-inline">
-                                    {headerTable.map(item =>
+                                    <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => setTableHeaderSelect(e)} />
+                                    {/* {headerTable.map(item =>
                                         <div class="custom-control custom-checkbox custom-control-inline">
                                             <input type="checkbox" class="custom-control-input" id={item.key} value={item.key} statue={item.status} checked={item.status} onChange={(e) => onHeaderReportChange(item.status, e.target.value)} />
                                             <label class="custom-control-label" for={item.key}>{item.label}</label>
                                         </div>
-                                    )}
+                                    )} */}
                                 </form>
                                 <br />
                                 <div class="col-md-4 p-0">
@@ -559,38 +590,44 @@ function Layout(props) {
                                             )}
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {dataExport.map(item =>
-                                            <tr class="text-center">
-                                                <td>{item.TranfomerID}</td>
-                                                <td>{item.MeterID}</td>
-                                                <td>{item.MeterType}</td>
-                                                <td>{item.RateType}</td>
-                                                <td>{item.Location[0]},{item.Location[1]}</td>
-                                                <th scope="row">{item.created}</th>
-                                                <td>{item.Sensors.V1}</td>
-                                                <td>{item.Sensors.V2}</td>
-                                                <td>{item.Sensors.V3}</td>
-                                                <td>{item.Sensors.KW}</td>
-                                                <td>{item.Sensors.KVAR}</td>
-                                                <td>{item.Sensors.KWH}</td>
-                                                <td>{item.Sensors.KVARH}</td>
-                                            </tr>
-                                        )}
+                                    {dataExport.length == 0
+                                        ? <img src={imgNotFound} width={'100%'} />
+                                        : <tbody>
+                                            {dataExport.map(item =>
+                                                <tr class="text-center">
+                                                    <td>{item.TranfomerID}</td>
+                                                    <td>{item.MeterID}</td>
+                                                    <td>{item.MeterType}</td>
+                                                    <td>{item.RateType}</td>
+                                                    <td>{item.Location[0]},{item.Location[1]}</td>
+                                                    <th scope="row">{item.created}</th>
+                                                    <td>{item.V1}</td>
+                                                    <td>{item.V2}</td>
+                                                    <td>{item.V3}</td>
+                                                    <td>{item.KW}</td>
+                                                    <td>{item.KVAR}</td>
+                                                    <td>{item.KWH}</td>
+                                                    <td>{item.KVARH}</td>
+                                                </tr>
+                                            )}
 
-                                    </tbody>
+                                        </tbody>
+                                    }
+
                                 </table>
                             </div>
                             <div class="w-100 clearfix"></div>
-                            <div class="row justify-content-end">
-                                <div class=" col-md-3 col-sm-12">
-                                    <CSVLink data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
-                                </div>
-                                <div class="col-md-3  col-sm-12">
-                                    <button class="btn btn-primary btn-block mb-2" disabled>   Excel Export  </button>
+                            {dataExport.length > 0 ?
+                                <div class="row justify-content-end">
+                                    <div class=" col-md-3 col-sm-12">
+                                        <CSVLink data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
+                                    </div>
+                                    <div class="col-md-3  col-sm-12">
+                                        <button class="btn btn-primary btn-block mb-2" disabled>   Excel Export  </button>
 
+                                    </div>
                                 </div>
-                            </div>
+                                : null}
                         </div >
                     </div >)
             case "meterdetail":
@@ -797,17 +834,17 @@ function Layout(props) {
                                         <SubMenu
                                             key={item.TranformerID}
                                             title={
-                                                <a href="#">
+                                                <span>
                                                     <img src={transformerLogo} height="18" width="auto" style={{ marginRight: 5 }} />
                                                     <span>ID : {item.TranformerID}</span>
-                                                </a>
+                                                </span>
                                             }
                                         >
                                             {item.MeterInfo.map(item => {
                                                 return (
                                                     <Menu.Item key={item.MeterID}><li onClick={() => openMeterDetail(item)}>
-                                                        <a href="#">MeterID: {item.MeterID}
-                                                        </a>
+                                                        <span>MeterID: {item.MeterID}
+                                                        </span>
                                                     </li></Menu.Item>
 
                                                 )
@@ -816,10 +853,10 @@ function Layout(props) {
                                     )
                                 })}
                                 <Menu.Item key="report" onClick={() => setPage("report")}>
-                                    <a href="#">
+                                    <span>
                                         <img src={reportLogo} height="18" width="auto" class="ml-1" style={{ marginRight: 5 }} />
                                         <a> Report</a>
-                                    </a>
+                                    </span>
                                 </Menu.Item>
                             </Menu>
                         </div></div>
