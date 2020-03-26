@@ -81,7 +81,7 @@ function Layout(props) {
                 ])
                 await setLoad(true);
                 setInterval(inquiryDataAvailability, 60000);
-                setInterval(InquirySensorAll(data), 60000)
+                setInterval(InquirySensorAll(data), 10000)
                 setInterval(inquirySystemAvailability, 60000);
                 setInterval(inquiryallActivePower, 60000)
                 setInterval(inquiryallActiveEnergy, 60000)
@@ -298,9 +298,9 @@ function Layout(props) {
                 maxZoom={10}
             // defaultMinimumClusterSize={19}
             > */}
-            {props.mark.map(loca => {
+            {props.meters.map(loca => {
                 return (
-                    <Marker key={loca.MeterID} options={{ icon: meterOff, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
+                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
                         {/* {openWindow && <InfoWindow onCloseClick={() => setOpenWindow(false)}>
                             <div>
                                 {" "}
@@ -326,14 +326,12 @@ function Layout(props) {
     ));
     const InquirySensorAll = (data) => {
         axios.get('http://52.163.210.101:44000/apiRoute/Things/checkOnline')
-            .then(res => {
-                console.log(res.data);
-                data.map(meter =>
+            .then(async res => {
+                await data.map(meter =>
                     res.data.map(rec => {
                         if (meter.MeterIMEI == rec) meter.status = meterOn
                     }))
-                setMeters(data)
-                console.log("res", data)
+                await setMeters(data)
             }).catch(err => {
                 console.log("err", err)
 
@@ -489,7 +487,7 @@ function Layout(props) {
                         </div>
                         <div>
                             <div style={{ marginBottom: -160, display: "block" }}>
-                                <div style={{ position: "relative", zIndex: 1,top:70,left:20,width:100,backgroundColor:"#FAF7F7"}}>
+                                <div style={{ position: "relative", zIndex: 1, top: 70, left: 20, width: 100, backgroundColor: "#FAF7F7" }}>
                                     About Status <br />
                                     <div style={{}}>
                                         <div style={{ marginRight: 10 }}><img src={meterOn} height={50} /> <div>Connect</div></div>
@@ -497,6 +495,7 @@ function Layout(props) {
                                     </div>
                                 </div>
                             </div>
+                            {JSON.stringify(meters)}
                             <GoogleMapExample
                                 containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
                                 mapElement={<div style={{ height: `100%` }} />}
