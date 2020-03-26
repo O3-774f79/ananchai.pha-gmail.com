@@ -81,7 +81,7 @@ function Layout(props) {
                 ])
                 await setLoad(true);
                 setInterval(inquiryDataAvailability, 60000);
-                setInterval(InquirySensorAll(data), 10000)
+                setInterval(InquirySensorAll(data), 60000)
                 setInterval(inquirySystemAvailability, 60000);
                 setInterval(inquiryallActivePower, 60000)
                 setInterval(inquiryallActiveEnergy, 60000)
@@ -298,7 +298,7 @@ function Layout(props) {
                 maxZoom={10}
             // defaultMinimumClusterSize={19}
             > */}
-            {props.meters.map(loca => {
+            {props.mark.map(loca => {
                 return (
                     <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
                         {/* {openWindow && <InfoWindow onCloseClick={() => setOpenWindow(false)}>
@@ -337,6 +337,15 @@ function Layout(props) {
 
             })
     }
+    // const InquiryGraph = (data) => {
+    //     axios.get('http://52.163.210.101:44000/apiRoute/Things/InquiryGrahp?IMEI=' + data)
+    //         .then(async res => {
+    //             console.log(res)
+    //         }).catch(err => {
+    //             console.log("err", err)
+
+    //         })
+    // }
     const handleClickLogout = () => {
         localStorage.clear("login")
     }
@@ -411,7 +420,8 @@ function Layout(props) {
                 meter["detail"] = res.data
                 await setMeterdetail(meter)
                 await setLoad(true);
-                setPage("meterdetail")
+                // await InquiryGraph(meter.MeterIMEI)
+                await setPage("meterdetail")
             })
             .catch(err => {
                 // setError(err.message);
@@ -495,7 +505,6 @@ function Layout(props) {
                                     </div>
                                 </div>
                             </div>
-                            {JSON.stringify(meters)}
                             <GoogleMapExample
                                 containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
                                 mapElement={<div style={{ height: `100%` }} />}
