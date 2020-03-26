@@ -17,7 +17,6 @@ const Login = props => {
         }
     }
     if (login === true) {
-        console.log("else");
         return <Redirect to={'/'} push={true} />
     }
     return (
