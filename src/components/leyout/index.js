@@ -517,14 +517,12 @@ function Layout(props) {
                             </div>
                         </div>
                         <div>
-                            <div style={{ marginBottom: -160, display: "block" }}>
-                                <div style={{ position: "relative", zIndex: 1, top: 70, left: 20, width: 100, backgroundColor: "#FAF7F7" }}>
-                                    About Status <br />
-                                    <div style={{}}>
-                                        <div style={{ marginRight: 10 }}><img src={meterOn} height={50} /> <div>Connect</div></div>
-                                        <div><img src={meterOff} height={50} /> <div>Disconnected</div></div>
+                            <div class="overlay">
+                                About Status <br />
+                                <div style={{}}>
+                                    <div class="dotGreen"></div> Connected <br />
+                                    <div class="dotRed"></div> Disconnected
                                     </div>
-                                </div>
                             </div>
                             <GoogleMapExample
                                 containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
