@@ -22,6 +22,8 @@ import './index.css'
 import "react-datepicker/dist/react-datepicker.css";
 const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
 const { SubMenu } = Menu;
+const { Column } = Table;
+
 
 function Layout(props) {
     const [hamberger, setHamberger] = useState(true);
@@ -37,9 +39,9 @@ function Layout(props) {
     const [MeterIDReport, setMeterIDReport] = useState(0)
     const [MeterSetReport, setMeterSetReport] = useState([])
     const [headerTable, setHeaderTable] = useState([])
-    const [tableHeader, setTableHeader] = useState(["TranfomerID", "MeterID", 'MeterType', 'Rate Type', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
-    const [tableHeaderSet, setTableHeaderSet] = useState(["TranfomerID", "MeterID", 'MeterType', 'Rate Type', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
-    const [tableHeaderSelect, setTableHeaderSelect] = useState([])
+    const [tableHeader, setTableHeader] = useState(["TranfomerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
+    const [tableHeaderSet, setTableHeaderSet] = useState(["TranfomerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
+    const [tableHeaderSelect, setTableHeaderSelect] = useState(["TranfomerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'VoltageL1', 'VoltageL2', 'VoltageL3', 'Activepower', 'Reactivepower', 'Activeenergy', 'Reactiveenergy'])
     const [dataExport, setDataExport] = useState([])
     const [dataAvailability, setDataAvailability] = useState(0)
     const [systemAvailability, setSystemAvailability] = useState(0)
@@ -72,10 +74,10 @@ function Layout(props) {
                 await setTranformer(res.data)
                 await setMeters(data)
                 await setHeaderTable([
-                    { title: 'Transformer ID', label: 'Transformer ID', key: 'TranfomerID', dataIndex: "TranfomerID", status: true },
-                    { title: 'Meter ID', label: 'Meter ID', key: 'MeterID', dataIndex: "MeterID", status: true },
-                    { title: 'Meter Type', label: 'Meter Type', key: 'MeterType', dataIndex: "MeterType", status: true },
-                    { title: 'Rate Type', label: 'Rate Type', key: 'RateType', dataIndex: "RateType", status: true },
+                    { title: 'TransformerID', label: 'Transformer ID', key: 'TranfomerID', dataIndex: "TranfomerID", status: true },
+                    { title: 'MeterID', label: 'Meter ID', key: 'MeterID', dataIndex: "MeterID", status: true },
+                    { title: 'MeterType', label: 'Meter Type', key: 'MeterType', dataIndex: "MeterType", status: true },
+                    { title: 'RateType', label: 'Rate Type', key: 'RateType', dataIndex: "RateType", status: true },
                     { title: 'Location', label: 'Location', key: 'Location', dataIndex: "Location", status: true },
                     { title: 'Date/Time', label: 'Date/Time', key: 'created', dataIndex: "created", status: true },
                     { title: 'Voltage L1', label: 'Voltage L1', key: 'Sensors.V1', dataIndex: "V1", status: true },
@@ -331,6 +333,11 @@ function Layout(props) {
             {/* </Marker> */}
         </GoogleMap>
     ));
+    const onCheckTableHeader = async (data) => {
+        await headerTable.forEach((v1, i1) => data.includes(v1.title) ? headerTable[i1].status = true : headerTable[i1].status = false)
+        await setHeaderTable([])
+        await setHeaderTable(headerTable)
+    }
     const InquirySensorAll = (data) => {
         axios.get('http://52.163.210.101:44000/apiRoute/Things/checkOnline')
             .then(async res => {
@@ -465,7 +472,8 @@ function Layout(props) {
                         item["KVAR"] = item.Sensors.KVAR,
                         item["KW"] = item.Sensors.KW,
                         item["KWH"] = item.Sensors.KWH,
-                        item["KVARH"] = item.Sensors.KVARH
+                        item["KVARH"] = item.Sensors.KVARH,
+                        item["created"] = item.created //new Date(item.created)
                     )
                 }
                 )
@@ -589,7 +597,7 @@ function Layout(props) {
                                 <br />
                                 <h3>Select Header Report   </h3><span class="small text-secondary">*defualt Show all </span> <br /><br />
                                 <form class="form-inline">
-                                    {/* <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => setTableHeaderSelect(e)} /> */}
+                                    <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => onCheckTableHeader(e)} />
                                 </form>
                                 <br />
                                 <div class="col-md-4 p-0">
@@ -599,7 +607,13 @@ function Layout(props) {
                         </div>
                         <div id="ShowSearch">
                             <div class="table-responsive ">
-                                <Table dataSource={dataExport} columns={headerTable} loading={loadingTable} />;
+                                <Table dataSource={dataExport} loading={loadingTable}>
+                                    {headerTable.map(item => {
+                                        if (item.status === true) {
+                                            return <Column title={item.title} dataIndex={item.dataIndex} key={item.key} />
+                                        }
+                                    })}
+                                </Table>;
                             </div>
                             <div class="w-100 clearfix"></div>
                             {dataExport.length > 0 ?
