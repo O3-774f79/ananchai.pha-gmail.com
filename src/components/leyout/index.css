@@ -17,3 +17,13 @@
   .ant-checkbox-group-item {
     display: flex
   }
+  /* .ant-table-cell {
+    background-color: #B268CF;
+  } */
+  thead tr {
+    background-color: #B268CF
+  }
+  .percent-text{
+    position: absolute;
+    top:100
+  }

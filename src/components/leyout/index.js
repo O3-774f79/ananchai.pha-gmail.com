@@ -6,13 +6,12 @@ import transformerLogo from '../../img/i-transformer.svg'
 import reportLogo from '../../img/i-export.svg'
 import meterOff from '../../img/Meter-off.svg'
 import meterOn from '../../img/Meter.svg'
-import imgNotFound from '../../img/img-not-found.png'
 import axios from 'axios'
 import HighchartsReact from 'highcharts-react-official'
 import Highcharts from 'highcharts'
 import { Menu, Checkbox, Table, Row, Col } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import GaugeChart from 'react-gauge-chart'
 import DatePicker from 'react-datepicker'
 import {
@@ -48,6 +47,14 @@ function Layout(props) {
     const [endDateSet, setEndDateSet] = useState("")
     const [activePower, setActivePower] = useState(0)
     const [activeEnergy, setAllActiveEnergy] = useState(0)
+    const [loadingTable, setLoadingTable] = useState(false)
+    const [graphV1, setGraphV1] = useState([])
+    const [graphV2, setGraphV2] = useState([])
+    const [graphV3, setGraphV3] = useState([])
+    const [ActivePower, setActivePowerGraph] = useState([])
+    const [ReactivePower, setReactivePower] = useState([])
+    const [ActiveEnergy, setActiveEnergy] = useState([])
+    const [ReactiveEnergy, setReactiveEnergy] = useState([])
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
     const onMarkerClick = (evt) => {
@@ -65,19 +72,19 @@ function Layout(props) {
                 await setTranformer(res.data)
                 await setMeters(data)
                 await setHeaderTable([
-                    { label: 'Transformer ID', key: 'TranfomerID', dataIndex: "TranfomerID", status: true },
-                    { label: 'Meter ID', key: 'MeterID', dataIndex: "MeterID", status: true },
-                    { label: 'Meter Type', key: 'MeterType', dataIndex: "MeterType", status: true },
-                    { label: 'Rate Type', key: 'RateType', dataIndex: "RateType", status: true },
-                    { label: 'Location', key: 'Location', dataIndex: "Location", status: true },
-                    { label: 'Date/Time', key: 'created', dataIndex: "created", status: true },
-                    { label: 'Voltage L1', key: 'Sensors.V1', dataIndex: "Sensors.V1", status: true },
-                    { label: 'Voltage L2', key: 'Sensors.V2', dataIndex: "TranfomerID", status: true },
-                    { label: 'Voltage L3', key: 'Sensors.V3', dataIndex: "TranfomerID", status: true },
-                    { label: 'Active power', key: 'Sensors.KW', dataIndex: "TranfomerID", status: true },
-                    { label: 'Reactive power', key: 'Sensors.KVAR', dataIndex: "TranfomerID", status: true },
-                    { label: 'Active energy', key: 'Sensors.KWH', dataIndex: "TranfomerID", status: true },
-                    { label: 'Reactive energy', key: 'Sensors.KVARH', dataIndex: "TranfomerID", status: true },
+                    { title: 'Transformer ID', label: 'Transformer ID', key: 'TranfomerID', dataIndex: "TranfomerID", status: true },
+                    { title: 'Meter ID', label: 'Meter ID', key: 'MeterID', dataIndex: "MeterID", status: true },
+                    { title: 'Meter Type', label: 'Meter Type', key: 'MeterType', dataIndex: "MeterType", status: true },
+                    { title: 'Rate Type', label: 'Rate Type', key: 'RateType', dataIndex: "RateType", status: true },
+                    { title: 'Location', label: 'Location', key: 'Location', dataIndex: "Location", status: true },
+                    { title: 'Date/Time', label: 'Date/Time', key: 'created', dataIndex: "created", status: true },
+                    { title: 'Voltage L1', label: 'Voltage L1', key: 'Sensors.V1', dataIndex: "V1", status: true },
+                    { title: 'Voltage L2', label: 'Voltage L2', key: 'Sensors.V2', dataIndex: "V2", status: true },
+                    { title: 'Voltage L3', label: 'Voltage L3', key: 'Sensors.V3', dataIndex: "V3", status: true },
+                    { title: 'Active power', label: 'Active power', key: 'Sensors.KW', dataIndex: "KW", status: true },
+                    { title: 'Reactive power', label: 'Reactive power', key: 'Sensors.KVAR', dataIndex: "KVAR", status: true },
+                    { title: 'Active energy', label: 'Active energy', key: 'Sensors.KWH', dataIndex: "KWH", status: true },
+                    { title: 'Reactive energy', label: 'Reactive energy', key: 'Sensors.KVARH', dataIndex: "KVARH", status: true },
                 ])
                 await setLoad(true);
                 setInterval(inquiryDataAvailability, 60000);
@@ -138,7 +145,7 @@ function Layout(props) {
             [
                 {
                     name: 'Voltage L1',
-                    data: [],
+                    data: graphV1,
                     color: "#8085e9",
                     tooltip: {
                         valueSuffix: " V"
@@ -146,7 +153,7 @@ function Layout(props) {
                 },
                 {
                     name: 'Voltage L2',
-                    data: [],
+                    data: graphV2,
                     color: "#f7a35c",
                     tooltip: {
                         valueSuffix: " V"
@@ -154,7 +161,7 @@ function Layout(props) {
                 },
                 {
                     name: 'Voltage L3',
-                    data: [], color: "#f15c80",
+                    data: graphV3, color: "#f15c80",
                     tooltip: {
                         valueSuffix: " V"
                     },
@@ -190,7 +197,7 @@ function Layout(props) {
         series: [
             {
                 name: 'Active Power',
-                data: [],
+                data: ActivePower,
                 color: "#f45b5b",
                 tooltip: {
                     valueSuffix: " kW"
@@ -198,7 +205,7 @@ function Layout(props) {
             },
             {
                 name: 'Reactive Power',
-                data: [],
+                data: ReactivePower,
                 color: "#2b908f",
                 tooltip: {
                     valueSuffix: " kVar"
@@ -268,7 +275,7 @@ function Layout(props) {
         series: [
             {
                 name: 'Active Energy',
-                data: [],
+                data: ActiveEnergy,
                 color: "#f45b5b",
                 tooltip: {
                     valueSuffix: " kWh"
@@ -276,7 +283,7 @@ function Layout(props) {
             },
             {
                 name: 'Reactive Energy',
-                data: [],
+                data: ReactiveEnergy,
                 color: "#2b908f",
                 tooltip: {
                     valueSuffix: " kVarh"
@@ -337,15 +344,41 @@ function Layout(props) {
 
             })
     }
-    // const InquiryGraph = (data) => {
-    //     axios.get('http://52.163.210.101:44000/apiRoute/Things/InquiryGrahp?IMEI=' + data)
-    //         .then(async res => {
-    //             console.log(res)
-    //         }).catch(err => {
-    //             console.log("err", err)
+    const InquiryGraph = (data) => {
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/InquiryGrahp?IMEI=' + data)
+            .then(async res => {
+                res.data.created = res.data.created.map(d => new Date(d).getTime())
+                let datav1 = []
+                let datav2 = []
+                let datav3 = []
 
-    //         })
-    // }
+                let datavKW_LP = []
+                let datavKVAR_LP = []
+
+                let datavKWH_LP = []
+                let datavKVARH_LP = []
+
+                await res.data.created.forEach((date, i) => {
+                    datav1.push([date, res.data.V1_LP[i]])
+                    datav2.push([date, res.data.V2_LP[i]])
+                    datav3.push([date, res.data.V3_LP[i]])
+                    datavKW_LP.push([date, res.data.KW_LP[i]])
+                    datavKVAR_LP.push([date, res.data.KVAR_LP[i]])
+                    datavKWH_LP.push([date, res.data.KWH_LP[i]])
+                    datavKVARH_LP.push([date, res.data.KVARH_LP[i]])
+                })
+                await setGraphV1(datav1)
+                await setGraphV2(datav2)
+                await setGraphV3(datav3)
+                await setActivePowerGraph(datavKW_LP)
+                await setReactivePower(datavKVAR_LP)
+                await setActiveEnergy(datavKWH_LP)
+                await setReactiveEnergy(datavKVARH_LP)
+            }).catch(err => {
+                console.log("err", err)
+
+            })
+    }
     const handleClickLogout = () => {
         localStorage.clear("login")
     }
@@ -358,20 +391,6 @@ function Layout(props) {
         } else {
             setMeterSetReport([])
         }
-    }
-    const onHeaderReportChange = (checkedValues) => {
-        setTableHeader(checkedValues)
-        // headerTable.map(item => { if (item.key === value) { item.status = !status; return item } })
-        // setHeaderTable(headerTable)
-        // headerTable.map(item => { if (item.key == value) { item.status == !text; return item } })
-        // let updateHeader = headerTable.map(item => {
-        //     if (text == item.text) {
-        //         dataExport.map(item => delete item[text])
-        //         console.log(dataExport)
-        //         item.show = !item.show
-        //     }
-        //     return item
-        // })
     }
     const inquiryDataAvailability = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
@@ -420,7 +439,7 @@ function Layout(props) {
                 meter["detail"] = res.data
                 await setMeterdetail(meter)
                 await setLoad(true);
-                // await InquiryGraph(meter.MeterIMEI)
+                await InquiryGraph(meter.MeterIMEI)
                 await setPage("meterdetail")
             })
             .catch(err => {
@@ -429,6 +448,7 @@ function Layout(props) {
             })
     }
     const searchHistiry = () => {
+        setLoadingTable(true)
         axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
             .then(async res => {
                 res.data.history.map(item => {
@@ -450,6 +470,7 @@ function Layout(props) {
                 }
                 )
                 setDataExport(res.data.history)
+                setLoadingTable(false)
             })
             .catch(err => {
                 console.log(err)
@@ -516,7 +537,7 @@ function Layout(props) {
                 )
             case 'report':
                 return (
-                    <div class="col-md-12 bg-white text-left pt-2 pb-5">
+                    <div class="row">
                         <h5 class="pt-3">Report</h5>
                         <hr />
                         <div class="col-md-8 offset-md-2  pl-5">
@@ -570,13 +591,7 @@ function Layout(props) {
                                 <br />
                                 <h3>Select Header Report   </h3><span class="small text-secondary">*defualt Show all </span> <br /><br />
                                 <form class="form-inline">
-                                    <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => setTableHeaderSelect(e)} />
-                                    {/* {headerTable.map(item =>
-                                        <div class="custom-control custom-checkbox custom-control-inline">
-                                            <input type="checkbox" class="custom-control-input" id={item.key} value={item.key} statue={item.status} checked={item.status} onChange={(e) => onHeaderReportChange(item.status, e.target.value)} />
-                                            <label class="custom-control-label" for={item.key}>{item.label}</label>
-                                        </div>
-                                    )} */}
+                                    {/* <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => setTableHeaderSelect(e)} /> */}
                                 </form>
                                 <br />
                                 <div class="col-md-4 p-0">
@@ -586,43 +601,7 @@ function Layout(props) {
                         </div>
                         <div id="ShowSearch">
                             <div class="table-responsive ">
-                                <table class="table mt-5" >
-                                    <thead class="thead-violet">
-                                        <tr class="text-center">
-                                            {headerTable.map(item => {
-                                                // if (item.show) {
-                                                return (
-                                                    <th scope="col" class="text-left">{item.label}</th>)
-                                                // }
-                                            }
-                                            )}
-                                        </tr>
-                                    </thead>
-                                    {dataExport.length == 0
-                                        ? <img src={imgNotFound} width={'100%'} />
-                                        : <tbody>
-                                            {dataExport.map(item =>
-                                                <tr class="text-center">
-                                                    <td>{item.TranfomerID}</td>
-                                                    <td>{item.MeterID}</td>
-                                                    <td>{item.MeterType}</td>
-                                                    <td>{item.RateType}</td>
-                                                    <td>{item.Location[0]},{item.Location[1]}</td>
-                                                    <th scope="row">{item.created}</th>
-                                                    <td>{item.V1}</td>
-                                                    <td>{item.V2}</td>
-                                                    <td>{item.V3}</td>
-                                                    <td>{item.KW}</td>
-                                                    <td>{item.KVAR}</td>
-                                                    <td>{item.KWH}</td>
-                                                    <td>{item.KVARH}</td>
-                                                </tr>
-                                            )}
-
-                                        </tbody>
-                                    }
-
-                                </table>
+                                <Table dataSource={dataExport} columns={headerTable} loading={loadingTable} />;
                             </div>
                             <div class="w-100 clearfix"></div>
                             {dataExport.length > 0 ?
@@ -631,7 +610,7 @@ function Layout(props) {
                                         <CSVLink data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
                                     </div>
                                     <div class="col-md-3  col-sm-12">
-                                        <button class="btn btn-primary btn-block mb-2" disabled>   Excel Export  </button>
+                                        <button class="btn btn-primary btn-block mb-2" disabled>Excel Export</button>
 
                                     </div>
                                 </div>
@@ -854,7 +833,6 @@ function Layout(props) {
                                                         <span>MeterID: {item.MeterID}
                                                         </span>
                                                     </li></Menu.Item>
-
                                                 )
                                             })}
                                         </SubMenu>
