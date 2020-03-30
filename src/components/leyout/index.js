@@ -498,7 +498,7 @@ function Layout(props) {
                                 <div class="card" >
                                     <div class="card-body text-center">
                                         <h4 class=""> All Active Power </h4>
-                                        <h5 class="text-primary">{activePower} MW</h5>
+                                        <h5 class="text-primary">{activePower} KW</h5>
                                     </div>
                                 </div>
 
@@ -507,7 +507,7 @@ function Layout(props) {
                                 <div class="card">
                                     <div class="card-body text-center">
                                         <h4 class=""> All Active Energy </h4>
-                                        <h5 class="text-primary">{activeEnergy} MW</h5>
+                                        <h5 class="text-primary">{activeEnergy} KW</h5>
                                     </div>
                                 </div>
                             </div>
@@ -547,8 +547,10 @@ function Layout(props) {
                 )
             case 'report':
                 return (
-                    <div class="row">
-                        <h5 class="pt-3">Report</h5>
+                    <span>
+                        <div class="row" style={{ marginRight: 0, marginLeft: 0 }}>
+                            <h5 class="pt-3">Report</h5>
+                        </div>
                         <hr />
                         <div class="col-md-8 offset-md-2  pl-5">
                             <div class=" form-group row">
@@ -625,14 +627,14 @@ function Layout(props) {
                                     <div class=" col-md-3 col-sm-12">
                                         <CSVLink data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
                                     </div>
-                                    <div class="col-md-3  col-sm-12">
+                                    {/* <div class="col-md-3  col-sm-12">
                                         <button class="btn btn-primary btn-block mb-2" disabled>Excel Export</button>
 
-                                    </div>
+                                    </div> */}
                                 </div>
                                 : null}
                         </div >
-                    </div >)
+                    </span>)
             case "meterdetail":
                 return (
                     <div>
@@ -656,81 +658,99 @@ function Layout(props) {
                                     <div class="card-body text-left">
                                         <h4 class=""> Instantaneous value : </h4>
                                         <div style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap" }}>
-                                            <div> <div style={{ textAlign: "center" }}>Voltage Line1</div>
+                                            <div>  <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line1</h5>
                                                 <GaugeChart id="gauge-chart2"
                                                     style={{ width: 120 }}
-                                                    nrOfLevels={20}
-                                                    percent={meterDetail.detail ? (meterDetail.detail?.Sensors.V1 / 100) : 0}
-                                                    arcPadding={0.02}
-                                                    arcsLength={[0.4, 0.2, 0.4]}
+                                                    nrOfLevels={440}
+                                                    arcPadding={0}
+                                                    cornerRadius={0}
+                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.V1 * 100) / 440) : 0}
+                                                    arcsLength={[0.40, 0.20, 0.40]}
+                                                    colors={['#ff5454', '#3dcc5b', '#efd613']}
                                                     textColor={"#000000"}
+                                                    hideText={true}
                                                     formatTextValue={value => value + 'V'}
                                                 />
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V1 ? meterDetail.detail?.Sensors.V1 : 0} V</span>
                                             </div>
                                             <div>
-                                                <div style={{ textAlign: "center" }}>Voltage Line2</div>
+                                                <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line2</h5>
                                                 <GaugeChart id="gauge-chart5"
                                                     style={{ width: 120 }}
-                                                    nrOfLevels={420}
-                                                    arcsLength={[0.3, 0.5, 0.2]}
-                                                    colors={['#5BE12C', '#F5CD19', '#EA4228']}
-                                                    percent={meterDetail.detail ? meterDetail.detail?.Sensors.V2 / 100 : 0}
+                                                    nrOfLevels={440}
+                                                    arcPadding={0}
+                                                    cornerRadius={0}
+                                                    arcsLength={[0.40, 0.20, 0.40]}
+                                                    colors={['#ff5454', '#3dcc5b', '#efd613']}
+                                                    hideText={true}
+                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.V2 * 100) / 440) : 0}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
-                                                    arcPadding={0.02}
                                                 />
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V2 ? meterDetail.detail?.Sensors.V2 : 0} V</span>
                                             </div>
                                             <div>
-                                                <div style={{ textAlign: "center" }}>Voltage Line3</div>
+                                                <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line3</h5>
                                                 <GaugeChart id="gauge-chart1"
                                                     style={{ width: 120 }}
-                                                    nrOfLevels={420}
-                                                    arcsLength={[0.3, 0.5, 0.2]}
-                                                    colors={['#5BE12C', '#F5CD19', '#EA4228']}
-                                                    percent={meterDetail.detail ? meterDetail.detail?.Sensors.V3 / 100 : 0}
+                                                    nrOfLevels={440}
+                                                    arcPadding={0}
+                                                    cornerRadius={0}
+                                                    hideText={true}
+                                                    arcsLength={[0.40, 0.20, 0.40]}
+                                                    colors={['#ff5454', '#3dcc5b', '#efd613']}
+                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.V3 * 100) / 440) : 0}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
-                                                    arcPadding={0.02}
                                                 />
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V3 ? meterDetail.detail?.Sensors.V3 : 0} V</span>
                                             </div>
-                                            {/* </div>
-                                        <div style={{ display: "flex", justifyContent: 'center', padding: 3 }}> */}
-                                            <div> <div style={{ textAlign: "center" }}>Current Line1</div>
+                                            <div> <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line1</h5>
                                                 <GaugeChart id="gauge-chart7"
                                                     style={{ width: 120 }}
-                                                    nrOfLevels={20}
+                                                    nrOfLevels={100}
+                                                    arcPadding={0}
+                                                    cornerRadius={0}
+                                                    hideText={true}
                                                     percent={meterDetail.detail ? (meterDetail.detail?.Sensors.I1 / 100) : 0}
-                                                    arcPadding={0.02}
-                                                    arcsLength={[0.4, 0.2, 0.4]}
+                                                    arcsLength={[0.8, 0.2]}
+                                                    colors={['#3dcc5b', '#ff5454']}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
                                                 />
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I1 ? meterDetail.detail?.Sensors.I1 : 0} V</span>
                                             </div>
                                             <div>
-                                                <div style={{ textAlign: "center" }}>Current Line2</div>
+                                                <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line2</h5>
                                                 <GaugeChart id="gauge-chart8"
                                                     style={{ width: 120 }}
-                                                    nrOfLevels={420}
-                                                    arcsLength={[0.3, 0.5, 0.2]}
-                                                    colors={['#5BE12C', '#F5CD19', '#EA4228']}
+                                                    nrOfLevels={100}
+                                                    arcPadding={0}
+                                                    cornerRadius={0}
+                                                    hideText={true}
+                                                    arcsLength={[0.8, 0.2]}
+                                                    colors={['#3dcc5b', '#ff5454']}
                                                     percent={meterDetail.detail ? meterDetail.detail?.Sensors.I2 / 100 : 0}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
-                                                    arcPadding={0.02}
                                                 />
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I2 ? meterDetail.detail?.Sensors.I2 : 0} V</span>
                                             </div>
                                             <div>
-                                                <div style={{ textAlign: "center" }}>Current Line3</div>
+                                                <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line3</h5>
                                                 <GaugeChart id="gauge-chart9"
                                                     style={{ width: 120 }}
-                                                    nrOfLevels={420}
-                                                    arcsLength={[0.3, 0.5, 0.2]}
-                                                    colors={['#5BE12C', '#F5CD19', '#EA4228']}
+                                                    nrOfLevels={100}
+                                                    arcPadding={0}
+                                                    cornerRadius={0}
+                                                    hideText={true}
+                                                    arcsLength={[0.8, 0.2]}
+                                                    colors={['#3dcc5b', '#ff5454']}
                                                     percent={meterDetail.detail ? meterDetail.detail?.Sensors.I3 / 100 : 0}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
-                                                    arcPadding={0.02}
                                                 />
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I3 ? meterDetail.detail?.Sensors.I3 : 0} V</span>
                                             </div>
                                         </div>
                                     </div>
@@ -787,9 +807,9 @@ function Layout(props) {
         }
     }
     return (
-        <div style={{ display: 'flex', height: "100vh" }}>
+        <div style={{ display: 'flex', height: "100% auto" }}>
             <div style={{
-                width: hamberger ? 350 : 0, zIndex: 999999
+                width: hamberger ? 300 : 0, zIndex: 999999
             }}>
                 {!hamberger
                     ? <a id="show-sidebar" class="btn btn-sm btn-primary pt-2" onClick={() => setHamberger(!hamberger)}>
@@ -797,14 +817,17 @@ function Layout(props) {
                     </a>
                     :
                     <div style={{ height: "100%", overflow: "scroll" }}>
-                        <div style={{ textAlign: "right", cursor: 'pointer', padding: "10px 20px", display: 'block' }}>
-                            <a id="show-sidebar" onClick={() => setHamberger(!hamberger)}>
-                                <i class="material-icons text-primary">clear</i>
-                            </a>
-                        </div>
-                        <div class="sidebar-header" style={{ padding: "20px", cursor: "pointer" }} onClick={() => setPage("home")}>
-                            <img src={logoPEA} class="mx-auto d-flex" />
-                        </div>
+                        <span style={{ display: "flex" }}>
+                            <div class="sidebar-header" style={{ padding: "20px", cursor: "pointer" }} onClick={() => setPage("home")}>
+                                <img src={logoPEA} class="mx-auto d-flex" />
+                            </div>
+                            <div style={{ textAlign: "right", cursor: 'pointer', padding: "10px 20px", display: 'block' }}>
+                                <a id="show-sidebar" onClick={() => setHamberger(!hamberger)}>
+                                    <i class="material-icons text-primary">clear</i>
+                                </a>
+                            </div>
+
+                        </span>
                         <div class="sidebar-menu">
                             <h6 class="ml-4"> ยินดีต้อนรับ </h6>
                             <Menu
@@ -812,6 +835,7 @@ function Layout(props) {
                                 mode="inline"
                             >
                                 <SubMenu
+                                    style={{ width: "230px" }}
                                     key="sub1"
                                     title={
                                         <span>
@@ -819,7 +843,7 @@ function Layout(props) {
                                         </span>
                                     }
                                 >
-                                    <Menu.Item key="1" onClick={() => handleClickLogout()}>  <Link to="/login">Logout</Link></Menu.Item>
+                                    <Menu.Item style={{ width: "230px" }} key="1" onClick={() => handleClickLogout()}>  <Link to="/login">Logout</Link></Menu.Item>
                                 </SubMenu>
                             </Menu>
                         </div>
@@ -836,6 +860,7 @@ function Layout(props) {
                                     return (
                                         <SubMenu
                                             key={item.TranformerID}
+                                            style={{ width: "230px" }}
                                             title={
                                                 <span>
                                                     <img src={transformerLogo} height="18" width="auto" style={{ marginRight: 5 }} />
@@ -845,7 +870,7 @@ function Layout(props) {
                                         >
                                             {item.MeterInfo.map(item => {
                                                 return (
-                                                    <Menu.Item key={item.MeterID}><li onClick={() => openMeterDetail(item)}>
+                                                    <Menu.Item style={{ width: "230px" }} key={item.MeterID}><li onClick={() => openMeterDetail(item)}>
                                                         <span>MeterID: {item.MeterID}
                                                         </span>
                                                     </li></Menu.Item>
@@ -854,7 +879,7 @@ function Layout(props) {
                                         </SubMenu>
                                     )
                                 })}
-                                {localStorage.getItem("role") == "admin" ? < Menu.Item key="report" onClick={() => setPage("report")}>
+                                {localStorage.getItem("role") == "admin" ? < Menu.Item style={{ width: "230px" }} key="report" onClick={() => setPage("report")}>
                                     <span>
                                         <img src={reportLogo} height="18" width="auto" class="ml-1" style={{ marginRight: 5 }} />
                                         <a> Report</a>
@@ -866,11 +891,11 @@ function Layout(props) {
                 }
             </div>
             <div class="container-fluid">
-                <div class="bg-banner bg-white p-0 " >
-                    <img src={bannerLogo} class="img-fluid float-right" />
+                <div class="bg-banner bg-white p-0 " style={{ height: 200 }} >
+                    <img src={bannerLogo} class="img-fluid float-right" style={{ height: 50 }} />
                     <br />
                     <div class="clearfix"></div>
-                    <img src={objLogo} class="img-fluid mx-auto d-flex" alt="Responsive image" />
+                    <img src={objLogo} class="img-fluid mx-auto d-flex" alt="Responsive image" style={{ height: 150 }} />
                 </div>
                 <div class="w-100 mt-4 "></div>
                 {renderSwitch(page)}
