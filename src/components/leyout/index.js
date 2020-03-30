@@ -387,7 +387,11 @@ function Layout(props) {
             })
     }
     const handleClickLogout = () => {
-        localStorage.clear("login")
+        localStorage.clear("token")
+        localStorage.clear("firstName")
+        localStorage.clear("lastName")
+        localStorage.clear("role")
+
     }
     const onSelectTranformerIDReportChange = (e) => {
         let meterList = tranformers.filter(item => item.TranformerID === e)[0]
@@ -811,7 +815,7 @@ function Layout(props) {
                                     key="sub1"
                                     title={
                                         <span>
-                                            <span>Admin</span>
+                                            <span>{localStorage.getItem("firstName")} {localStorage.getItem("lastName")}</span>
                                         </span>
                                     }
                                 >
@@ -850,12 +854,13 @@ function Layout(props) {
                                         </SubMenu>
                                     )
                                 })}
-                                <Menu.Item key="report" onClick={() => setPage("report")}>
+                                {localStorage.getItem("role") == "admin" ? < Menu.Item key="report" onClick={() => setPage("report")}>
                                     <span>
                                         <img src={reportLogo} height="18" width="auto" class="ml-1" style={{ marginRight: 5 }} />
                                         <a> Report</a>
                                     </span>
-                                </Menu.Item>
+                                </Menu.Item> : null}
+
                             </Menu>
                         </div></div>
                 }
@@ -874,7 +879,7 @@ function Layout(props) {
 
 
 
-        </div>
+        </div >
 
     )
 }

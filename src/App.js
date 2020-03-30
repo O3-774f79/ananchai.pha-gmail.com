@@ -3,7 +3,7 @@ import Layout from './components/leyout'
 import Login from './pages/login'
 import {
   BrowserRouter as Router,
-  Route,
+  Route
 } from 'react-router-dom'
 import PrivateRoute from './components/privateroute'
 // import './App.css';
@@ -11,10 +11,8 @@ import PrivateRoute from './components/privateroute'
 function App() {
   return (
     <Router>
-      <div>
-        <PrivateRoute exact path='/' component={Layout} />
-        <Route path="/login" component={Login} />
-      </div>
+      <PrivateRoute exact path='/' component={Layout} />
+      <Route path="/login" component={Login} />
     </Router>
   );
 }
