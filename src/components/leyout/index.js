@@ -25,7 +25,7 @@ const { SubMenu } = Menu;
 const { Column } = Table;
 
 
-function Layout(props) {
+const Layout = (props) => {
     const [hamberger, setHamberger] = useState(true);
     const [page, setPage] = useState("home")
     const [openWindow, setOpenWindow] = useState(false)
@@ -41,7 +41,6 @@ function Layout(props) {
     const [headerTable, setHeaderTable] = useState([])
     const [tableHeader, setTableHeader] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
     const [tableHeaderSet, setTableHeaderSet] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
-    const [tableHeaderSelect, setTableHeaderSelect] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'VoltageL1', 'VoltageL2', 'VoltageL3', 'Activepower', 'Reactivepower', 'Activeenergy', 'Reactiveenergy'])
     const [dataExport, setDataExport] = useState([])
     const [dataAvailability, setDataAvailability] = useState(0)
     const [systemAvailability, setSystemAvailability] = useState(0)
@@ -310,7 +309,7 @@ function Layout(props) {
             > */}
             {props.mark.map(loca => {
                 return (
-                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 32, height: 32 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
+                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
                         {/* {openWindow && <InfoWindow onCloseClick={() => setOpenWindow(false)}>
                             <div>
                                 {" "}
@@ -321,17 +320,6 @@ function Layout(props) {
                 )
             })}
             {/* </MarkerClusterer> */}
-            {/* {props.mark.map(loca => {
-                return (
-                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: "20px", height: "20px" } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}> */}
-            {/* {openWindow && <InfoWindow onCloseClick={() => setOpenWindow(false)}>
-                            <div>
-                                {" "}
-          Controlled zoom: {props.zoom}
-                            </div>
-                        </InfoWindow>} */}
-
-            {/* </Marker> */}
         </GoogleMap>
     ));
     const onCheckTableHeader = async (data) => {
@@ -537,6 +525,7 @@ function Layout(props) {
                                     <div class="dotRed"></div> Disconnected
                                     </div>
                             </div>
+
                             <GoogleMapExample
                                 containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
                                 mapElement={<div style={{ height: `100%` }} />}
@@ -719,7 +708,7 @@ function Layout(props) {
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
                                                 />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I1 ? meterDetail.detail?.Sensors.I1 : 0} V</span>
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I1 ? meterDetail.detail?.Sensors.I1 : 0} A</span>
                                             </div>
                                             <div>
                                                 <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line2</h5>
@@ -735,7 +724,7 @@ function Layout(props) {
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
                                                 />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I2 ? meterDetail.detail?.Sensors.I2 : 0} V</span>
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I2 ? meterDetail.detail?.Sensors.I2 : 0} A</span>
                                             </div>
                                             <div>
                                                 <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line3</h5>
@@ -751,7 +740,7 @@ function Layout(props) {
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
                                                 />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I3 ? meterDetail.detail?.Sensors.I3 : 0} V</span>
+                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I3 ? meterDetail.detail?.Sensors.I3 : 0} A</span>
                                             </div>
                                         </div>
                                     </div>
@@ -904,12 +893,7 @@ function Layout(props) {
                 <div class="w-100 mt-4 "></div>
                 {renderSwitch(page)}
             </div>
-
-
-
-
         </div >
-
     )
 }
 export default Layout;
