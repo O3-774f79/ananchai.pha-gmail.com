@@ -171,7 +171,8 @@ function Layout(props) {
 
             ], credits: {
                 enabled: false
-            },
+            }, responsive: true,
+
     }
     const loadprofileOptions = {
         chart: {
@@ -664,7 +665,7 @@ function Layout(props) {
                                                     nrOfLevels={440}
                                                     arcPadding={0}
                                                     cornerRadius={0}
-                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.V1 * 100) / 440) : 0}
+                                                    percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V1 * 100) / 440) / 100) : 0}
                                                     arcsLength={[0.40, 0.20, 0.40]}
                                                     colors={['#ff5454', '#3dcc5b', '#efd613']}
                                                     textColor={"#000000"}
@@ -683,7 +684,7 @@ function Layout(props) {
                                                     arcsLength={[0.40, 0.20, 0.40]}
                                                     colors={['#ff5454', '#3dcc5b', '#efd613']}
                                                     hideText={true}
-                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.V2 * 100) / 440) : 0}
+                                                    percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V2 * 100) / 440) / 100) : 0}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
                                                 />
@@ -699,7 +700,7 @@ function Layout(props) {
                                                     hideText={true}
                                                     arcsLength={[0.40, 0.20, 0.40]}
                                                     colors={['#ff5454', '#3dcc5b', '#efd613']}
-                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.V3 * 100) / 440) : 0}
+                                                    percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V3 * 100) / 440) / 100) : 0}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
                                                 />
@@ -712,7 +713,7 @@ function Layout(props) {
                                                     arcPadding={0}
                                                     cornerRadius={0}
                                                     hideText={true}
-                                                    percent={meterDetail.detail ? (meterDetail.detail?.Sensors.I1 / 100) : 0}
+                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I1 / 100) / 100) : 0}
                                                     arcsLength={[0.8, 0.2]}
                                                     colors={['#3dcc5b', '#ff5454']}
                                                     textColor={"#000000"}
@@ -730,7 +731,7 @@ function Layout(props) {
                                                     hideText={true}
                                                     arcsLength={[0.8, 0.2]}
                                                     colors={['#3dcc5b', '#ff5454']}
-                                                    percent={meterDetail.detail ? meterDetail.detail?.Sensors.I2 / 100 : 0}
+                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I2 / 100) / 100) : 0}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
                                                 />
@@ -746,7 +747,7 @@ function Layout(props) {
                                                     hideText={true}
                                                     arcsLength={[0.8, 0.2]}
                                                     colors={['#3dcc5b', '#ff5454']}
-                                                    percent={meterDetail.detail ? meterDetail.detail?.Sensors.I3 / 100 : 0}
+                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I3 / 100) / 100) : 0}
                                                     textColor={"#000000"}
                                                     formatTextValue={value => value + 'V'}
                                                 />
@@ -782,20 +783,23 @@ function Layout(props) {
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        <div style={{ width: '100%' }}>
                             <HighchartsReact
+                                style={{ width: '100%' }}
                                 highcharts={Highcharts}
                                 options={VoltageOption}
                             />
                         </div>
-                        <div>
+                        <div style={{ width: '100%' }}>
                             <HighchartsReact
+                                style={{ width: '100%' }}
                                 highcharts={Highcharts}
                                 options={loadprofileOptions}
                             />
                         </div>
-                        <div>
+                        <div style={{ width: '100%' }}>
                             <HighchartsReact
+                                style={{ width: '100%' }}
                                 highcharts={Highcharts}
                                 options={EnergyOptions}
                             />
