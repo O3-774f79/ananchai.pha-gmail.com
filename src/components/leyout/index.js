@@ -8,7 +8,7 @@ import meterOff from '../../img/Meter-off.svg'
 import meterOn from '../../img/Meter.svg'
 import axios from 'axios'
 import HighchartsReact from 'highcharts-react-official'
-import Highcharts from 'highcharts'
+import Highcharts, { wrap } from 'highcharts'
 import { Menu, Checkbox, Table, Row, Col } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
 import { CSVLink } from "react-csv";
@@ -542,9 +542,10 @@ const Layout = (props) => {
                             <h5 class="pt-3">Report</h5>
                         </div>
                         <hr />
-                        <div class="col-md-8 offset-md-2  pl-5">
-                            <div class=" form-group row">
-                                <div class="col-md-4 mb-3">
+                        {/* <div class="col-md-8 offset-md-2  pl-5"> */}
+                        <div style={{ display: "flex", flexWrap: "wrap" }}>
+                            <div class=" form-group row" style={{ display: "flex", width: '50%' }}>
+                                <div style={{ width: '45%', marginRight: 5 }}>
                                     <div class="form-group">
                                         <label class="control-label"> Transformer ID</label>
                                         <select class="form-control custom-select" data-placeholder="Choose a Category" tabindex="1" value={TranformerIDReport} onChange={(e) => onSelectTranformerIDReportChange(e.target.value)}>
@@ -555,8 +556,7 @@ const Layout = (props) => {
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-1"></div>
-                                <div class="col-md-4 mb-3">
+                                <div style={{ width: '45%', marginRight: 5 }}>
                                     <div class="form-group">
                                         <label class="control-label">Meter ID</label>
                                         <select class="form-control custom-select" data-placeholder="Choose a MeterID" tabindex="1" value={MeterIDReport} onChange={(e) => setMeterIDReport(e.target.value)}>
@@ -568,8 +568,8 @@ const Layout = (props) => {
                                     </div>
                                 </div>
                             </div>
-                            <div class=" form-group row">
-                                <div class="col-md-4 ">
+                            <div class=" form-group row" style={{ display: "flex", width: '50%', flexWrap: "wrap" }}>
+                                <div style={{ width: '45%', marginRight: 5 }}>
                                     <label for="text" class="text-left">Start Date</label>
                                     <div class="input-group">
                                         <DatePicker class="form-control" selected={startDate} onChange={date => setStartDate(date)} dateFormat="dd/MM/yyyy" style={{ width: "100%" }} />
@@ -577,8 +577,10 @@ const Layout = (props) => {
                                             calendar_today</i>
                                     </div>
                                 </div>
-                                <div class="col-md-1 pt-2 "><label class="pt-4">  to</label></div>
-                                <div class="col-md-4 ">
+                                {/* <div style={{
+                                    marginLeft: 5, marginRight: 5, verticalAlign: "middle"
+                                }}><label class="pt-4">  to</label></div> */}
+                                <div style={{ width: '45%', marginRight: 5, flexWrap: "wrap" }}>
                                     <label for="text" class="text-left">End Date</label>
                                     <div class="input-group">
                                         <DatePicker class="form-control" selected={endDate} onChange={date => seEndDate(date)} dateFormat="dd/MM/yyyy" />
@@ -587,12 +589,10 @@ const Layout = (props) => {
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="w-100"></div>
-                            <div class="col-md-9 justify-content-center">
+                            <div class="col-md-12">
                                 <br />
-                                <h3>Select Header Report   </h3><span class="small text-secondary">*defualt Show all </span> <br /><br />
-                                <form class="form-inline">
+                                <h5>Select Header Report   </h5><span class="small text-secondary">*defualt Show all </span> <br /><br />
+                                <form class="form-inline" style={{ width: '100%' }}>
                                     <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => onCheckTableHeader(e)} />
                                 </form>
                                 <br />
@@ -624,7 +624,7 @@ const Layout = (props) => {
                                 </div>
                                 : null}
                         </div >
-                    </span>)
+                    </span >)
             case "meterdetail":
                 return (
                     <div>
