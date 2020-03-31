@@ -29,7 +29,7 @@ const { Column } = Table;
 const Layout = (props) => {
     const [hamberger, setHamberger] = useState(true);
     const [page, setPage] = useState("home")
-    const [openWindow, setOpenWindow] = useState(0)
+    const [openWindow, setOpenWindow] = useState("")
     const [tranformers, setTranformer] = useState([])
     const [meters, setMeters] = useState([])
     const [startDate, setStartDate] = useState(new Date());
@@ -302,30 +302,29 @@ const Layout = (props) => {
             }}
             minimumClusterSize={1}
         >
-            <MarkerClusterer
+            {/* <MarkerClusterer
                 averageCenter
                 enableRetinaIcons
                 gridSize={10}
                 maxZoom={10}
-            // defaultMinimumClusterSize={19}
-            >
-                {props.mark.map(loca => {
-                    return (
-                        <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(loca.MeterID)}>
-                            {openWindow == loca.MeterID && <InfoWindow >
-                                <div>
-                                    <p>Meter : {loca.MeterName}</p>
-                                    <p>Meter Type : {loca.MeterType}</p>
-                                    <p>Rate Type : {loca.RateType}</p>
-                                    <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
-                                    <p>Owner: {loca.Owner}</p>
-                                    <p>Address: {loca.Address}</p>
-                                </div>
-                            </InfoWindow>}
-                        </Marker>
-                    )
-                })}
-            </MarkerClusterer>
+            > */}
+            {props.mark.map(loca => {
+                return (
+                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(loca.MeterID)}>
+                        {openWindow == loca.MeterID && <InfoWindow >
+                            <div>
+                                <p>Meter : {loca.MeterName}</p>
+                                <p>Meter Type : {loca.MeterType}</p>
+                                <p>Rate Type : {loca.RateType}</p>
+                                <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
+                                <p>Owner: {loca.Owner}</p>
+                                <p>Address: {loca.Address}</p>
+                            </div>
+                        </InfoWindow>}
+                    </Marker>
+                )
+            })}
+            {/* </MarkerClusterer> */}
         </GoogleMap>
     ));
     const onCheckTableHeader = async (data) => {
@@ -412,6 +411,7 @@ const Layout = (props) => {
     const inquirySystemAvailability = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
             .then(async res => {
+                console.log(res.data.value);
                 setSystemAvailability(res.data.value)
             })
             .catch(err => {
@@ -897,7 +897,6 @@ const Layout = (props) => {
                 </div>
                 <div class="w-100 mt-4 "></div>
                 {renderSwitch(page)}
-                <MapMeter />
             </div>
         </div >
     )
