@@ -33,7 +33,7 @@ const Layout = (props) => {
     const [openWindow, setOpenWindow] = useState("")
     const [tranformers, setTranformer] = useState([])
     const [meters, setMeters] = useState([])
-    const [startDate, setStartDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date().setDate(new Date().getDate() - 1));
     const [endDate, seEndDate] = useState(new Date());
     const [meterDetail, setMeterdetail] = useState({})
     const [MeterDataArray, setMeterDataArray] = useState([])
@@ -305,7 +305,7 @@ const Layout = (props) => {
             <MarkerClusterer
                 averageCenter
                 enableRetinaIcons
-                gridSize={40}
+                gridSize={50}
                 maxZoom={19}
             >
                 {props.mark.map(loca =>      
