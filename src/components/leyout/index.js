@@ -12,6 +12,7 @@ import Highcharts, { wrap } from 'highcharts'
 import { Menu, Checkbox, Table, Row, Col } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
 import { CSVLink } from "react-csv";
+import MapMeter from '../googleMap'
 import GaugeChart from 'react-gauge-chart'
 import DatePicker from 'react-datepicker'
 import {
@@ -28,7 +29,7 @@ const { Column } = Table;
 const Layout = (props) => {
     const [hamberger, setHamberger] = useState(true);
     const [page, setPage] = useState("home")
-    const [openWindow, setOpenWindow] = useState(false)
+    const [openWindow, setOpenWindow] = useState(0)
     const [tranformers, setTranformer] = useState([])
     const [meters, setMeters] = useState([])
     const [startDate, setStartDate] = useState(new Date());
@@ -294,30 +295,37 @@ const Layout = (props) => {
     }
     const GoogleMapExample = withGoogleMap(props => (
         <GoogleMap
-            defaultCenter={{ lat: 13.752801, lng: 100.501587 }}
-            defaultZoom={9}
+            defaultCenter={{ lat: 13.53139, lng: 100.92252 }}
+            defaultZoom={11}
+            defaultOptions={{
+                scrollwheel: true,
+            }}
+            minimumClusterSize={1}
         >
-            {/* <MarkerClusterer
+            <MarkerClusterer
                 averageCenter
                 enableRetinaIcons
                 gridSize={10}
                 maxZoom={10}
             // defaultMinimumClusterSize={19}
-            > */}
-            {props.mark.map(loca => {
-                { console.log(loca.meterName) }
-                return (
-                    <Marker key={loca.MeterID} label={loca.meterName} options={{ icon: loca.status, scaledSize: { width: "20px", height: "20px" } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
-                        {/* {openWindow && <InfoWindow onCloseClick={() => setOpenWindow(false)}>
-                            <div>
-                                {" "}
-                                    Controlled zoom:
+            >
+                {props.mark.map(loca => {
+                    return (
+                        <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(loca.MeterID)}>
+                            {openWindow == loca.MeterID && <InfoWindow >
+                                <div>
+                                    <p>Meter : {loca.MeterName}</p>
+                                    <p>Meter Type : {loca.MeterType}</p>
+                                    <p>Rate Type : {loca.RateType}</p>
+                                    <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
+                                    <p>Owner: {loca.Owner}</p>
+                                    <p>Address: {loca.Address}</p>
                                 </div>
-                        </InfoWindow>} */}
-                    </Marker>
-                )
-            })}
-            {/* </MarkerClusterer> */}
+                            </InfoWindow>}
+                        </Marker>
+                    )
+                })}
+            </MarkerClusterer>
         </GoogleMap>
     ));
     const onCheckTableHeader = async (data) => {
@@ -523,7 +531,6 @@ const Layout = (props) => {
                                     <div class="dotRed"></div> Disconnected
                                     </div>
                             </div>
-
                             <GoogleMapExample
                                 containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
                                 mapElement={<div style={{ height: `100%` }} />}
@@ -890,6 +897,7 @@ const Layout = (props) => {
                 </div>
                 <div class="w-100 mt-4 "></div>
                 {renderSwitch(page)}
+                <MapMeter />
             </div>
         </div >
     )
