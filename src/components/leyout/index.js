@@ -58,9 +58,6 @@ const Layout = (props) => {
     const [ReactiveEnergy, setReactiveEnergy] = useState([])
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
-    const onMarkerClick = (evt) => {
-        console.log(evt);
-    };
     useEffect(() => {
         axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
             .then(async res => {
@@ -298,7 +295,7 @@ const Layout = (props) => {
     const GoogleMapExample = withGoogleMap(props => (
         <GoogleMap
             defaultCenter={{ lat: 13.752801, lng: 100.501587 }}
-            defaultZoom={10}
+            defaultZoom={9}
         >
             {/* <MarkerClusterer
                 averageCenter
@@ -308,8 +305,9 @@ const Layout = (props) => {
             // defaultMinimumClusterSize={19}
             > */}
             {props.mark.map(loca => {
+                { console.log(loca.meterName) }
                 return (
-                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
+                    <Marker key={loca.MeterID} label={loca.meterName} options={{ icon: loca.status, scaledSize: { width: "20px", height: "20px" } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(true)}>
                         {/* {openWindow && <InfoWindow onCloseClick={() => setOpenWindow(false)}>
                             <div>
                                 {" "}
@@ -496,7 +494,7 @@ const Layout = (props) => {
                                 <div class="card">
                                     <div class="card-body text-center">
                                         <h4 class=""> All Active Energy </h4>
-                                        <h5 class="text-primary">{activeEnergy} KW</h5>
+                                        <h5 class="text-primary">{activeEnergy} KWH</h5>
                                     </div>
                                 </div>
                             </div>
