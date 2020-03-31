@@ -11,7 +11,6 @@ import HighchartsReact from 'highcharts-react-official'
 import Highcharts, { wrap } from 'highcharts'
 import { Menu, Checkbox, Table, Row, Col } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
-import DemoApp from '../googlemap'
 import { CSVLink } from "react-csv";
 import GaugeChart from 'react-gauge-chart'
 import DatePicker from 'react-datepicker'
@@ -21,6 +20,7 @@ import {
 import 'antd/dist/antd.css';
 import './index.css'
 import "react-datepicker/dist/react-datepicker.css";
+const { compose, withProps, withHandlers, withStateHandlers } = require("recompose");
 const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
 const { SubMenu } = Menu;
 const { Column } = Table;
@@ -294,36 +294,48 @@ const Layout = (props) => {
             enabled: false
         }
     }
-    const GoogleMapExample = withGoogleMap(props => (
-        <GoogleMap
-            defaultCenter={{ lat: 13.53139, lng: 100.92252 }}
-            defaultZoom={11}
-            defaultOptions={{
-                scrollwheel: true,
-            }}
-        >
-            <MarkerClusterer
-                averageCenter
-                enableRetinaIcons
-                gridSize={50}
-                maxZoom={19}
-            >
-                {props.mark.map(loca =>      
-                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={()=>setInfoWindow(loca.MeterID)}>
-                        {openWindow == loca.MeterID && <InfoWindow >
-                            <div>
-                                <p>Meter : {loca.MeterName}</p>
-                                <p>Meter Type : {loca.MeterType}</p>
-                                <p>Rate Type : {loca.RateType}</p>
-                                <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
-                                <p>Owner: {loca.Owner}</p>
-                                <p>Address: {loca.Address}</p>
-                            </div>
-                        </InfoWindow>}
-                    </Marker>)}
-            </MarkerClusterer>
-        </GoogleMap>
-    ));
+    const GoogleMapExample = compose(
+        withStateHandlers(() => ({
+            meterId: ''
+        }), {
+            onToggleOpen: ({ isOpen }) => (props) => ({
+                meterId: props.tb.target.offsetParent.title
+            }
+            )
+        }),
+        withGoogleMap)(props => {
+            return (
+                <GoogleMap
+                    defaultCenter={{ lat: 13.53139, lng: 100.92252 }}
+                    defaultZoom={11}
+                >
+                    <MarkerClusterer
+                        averageCenter
+                        enableRetinaIcons
+                        gridSize={45}
+                        maxZoom={15}
+                    >
+                        {props.mark.map(loca =>
+                            <Marker key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
+                                {props.meterId == loca.MeterID &&
+                                    <InfoWindow
+                                    >
+                                        <div>
+                                            <p>Meter : {loca.MeterName}</p>
+                                            <p>Meter Type : {loca.MeterType}</p>
+                                            <p>Rate Type : {loca.RateType}</p>
+                                            <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
+                                            <p>Owner: {loca.Owner}</p>
+                                            <p>Address: {loca.Address}</p>
+                                        </div>
+                                    </InfoWindow>}
+                            </Marker>)
+                        }
+                    </MarkerClusterer>
+                </GoogleMap>
+            )
+
+        });
     const onCheckTableHeader = async (data) => {
         await headerTable.forEach((v1, i1) => data.includes(v1.title) ? headerTable[i1].status = true : headerTable[i1].status = false)
         await setHeaderTable([])
