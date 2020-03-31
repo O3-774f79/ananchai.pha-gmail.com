@@ -11,8 +11,8 @@ import HighchartsReact from 'highcharts-react-official'
 import Highcharts, { wrap } from 'highcharts'
 import { Menu, Checkbox, Table, Row, Col } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
+import DemoApp from '../googlemap'
 import { CSVLink } from "react-csv";
-import MapMeter from '../googleMap'
 import GaugeChart from 'react-gauge-chart'
 import DatePicker from 'react-datepicker'
 import {
@@ -27,6 +27,7 @@ const { Column } = Table;
 
 
 const Layout = (props) => {
+    const [flag, setFlag] = useState(0)
     const [hamberger, setHamberger] = useState(true);
     const [page, setPage] = useState("home")
     const [openWindow, setOpenWindow] = useState("")
@@ -293,6 +294,23 @@ const Layout = (props) => {
             enabled: false
         }
     }
+    const MarkerRender = props => {
+        setFlag(props.mark.length)
+        return props.mark.map(loca =>
+            <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(loca.MeterID)}>
+                {openWindow == loca.MeterID && <InfoWindow >
+                    <div>
+                        <p>Meter : {loca.MeterName}</p>
+                        <p>Meter Type : {loca.MeterType}</p>
+                        <p>Rate Type : {loca.RateType}</p>
+                        <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
+                        <p>Owner: {loca.Owner}</p>
+                        <p>Address: {loca.Address}</p>
+                    </div>
+                </InfoWindow>}
+            </Marker>
+        )
+    }
     const GoogleMapExample = withGoogleMap(props => (
         <GoogleMap
             defaultCenter={{ lat: 13.53139, lng: 100.92252 }}
@@ -300,7 +318,6 @@ const Layout = (props) => {
             defaultOptions={{
                 scrollwheel: true,
             }}
-            minimumClusterSize={1}
         >
             {/* <MarkerClusterer
                 averageCenter
@@ -308,22 +325,11 @@ const Layout = (props) => {
                 gridSize={10}
                 maxZoom={10}
             > */}
-            {props.mark.map(loca => {
-                return (
-                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(loca.MeterID)}>
-                        {openWindow == loca.MeterID && <InfoWindow >
-                            <div>
-                                <p>Meter : {loca.MeterName}</p>
-                                <p>Meter Type : {loca.MeterType}</p>
-                                <p>Rate Type : {loca.RateType}</p>
-                                <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
-                                <p>Owner: {loca.Owner}</p>
-                                <p>Address: {loca.Address}</p>
-                            </div>
-                        </InfoWindow>}
-                    </Marker>
-                )
-            })}
+                {console.log(props.mark)}
+                {flag == 0
+                    ? MarkerRender(props)
+                    : <Marker position={{ lat: 13.53139, lng: 100.92252 }} />
+                }
             {/* </MarkerClusterer> */}
         </GoogleMap>
     ));
@@ -897,6 +903,12 @@ const Layout = (props) => {
                 </div>
                 <div class="w-100 mt-4 "></div>
                 {renderSwitch(page)}
+                <GoogleMapExample
+                    containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
+                    mapElement={<div style={{ height: `100%` }} />}
+                    mark={meters}
+                    isMarkerShown
+                />
             </div>
         </div >
     )

@@ -9,6 +9,7 @@
     "antd": "^4.0.4",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
+    "google-map-react": "^1.1.7",
     "highcharts": "^8.0.4",
     "highcharts-react-official": "^3.0.0",
     "node-sass": "^4.13.1",
