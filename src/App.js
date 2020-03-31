@@ -5,7 +5,6 @@ import {
   BrowserRouter as Router,
   Route, Switch
 } from 'react-router-dom'
-import DemoApp from './components/googlemap'
 import PrivateRoute from './components/privateroute'
 // import './App.css';
 
