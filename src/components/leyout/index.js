@@ -294,23 +294,6 @@ const Layout = (props) => {
             enabled: false
         }
     }
-    const MarkerRender = props => {
-        setFlag(props.mark.length)
-        return props.mark.map(loca =>
-            <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => setOpenWindow(loca.MeterID)}>
-                {openWindow == loca.MeterID && <InfoWindow >
-                    <div>
-                        <p>Meter : {loca.MeterName}</p>
-                        <p>Meter Type : {loca.MeterType}</p>
-                        <p>Rate Type : {loca.RateType}</p>
-                        <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
-                        <p>Owner: {loca.Owner}</p>
-                        <p>Address: {loca.Address}</p>
-                    </div>
-                </InfoWindow>}
-            </Marker>
-        )
-    }
     const GoogleMapExample = withGoogleMap(props => (
         <GoogleMap
             defaultCenter={{ lat: 13.53139, lng: 100.92252 }}
@@ -319,18 +302,26 @@ const Layout = (props) => {
                 scrollwheel: true,
             }}
         >
-            {/* <MarkerClusterer
+            <MarkerClusterer
                 averageCenter
                 enableRetinaIcons
-                gridSize={10}
-                maxZoom={10}
-            > */}
-                {console.log(props.mark)}
-                {flag == 0
-                    ? MarkerRender(props)
-                    : <Marker position={{ lat: 13.53139, lng: 100.92252 }} />
-                }
-            {/* </MarkerClusterer> */}
+                gridSize={40}
+                maxZoom={19}
+            >
+                {props.mark.map(loca =>      
+                    <Marker key={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={()=>setInfoWindow(loca.MeterID)}>
+                        {openWindow == loca.MeterID && <InfoWindow >
+                            <div>
+                                <p>Meter : {loca.MeterName}</p>
+                                <p>Meter Type : {loca.MeterType}</p>
+                                <p>Rate Type : {loca.RateType}</p>
+                                <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
+                                <p>Owner: {loca.Owner}</p>
+                                <p>Address: {loca.Address}</p>
+                            </div>
+                        </InfoWindow>}
+                    </Marker>)}
+            </MarkerClusterer>
         </GoogleMap>
     ));
     const onCheckTableHeader = async (data) => {
@@ -458,6 +449,9 @@ const Layout = (props) => {
                 // setError(err.message);
                 setLoad(true)
             })
+    }
+    const setInfoWindow = (id) => {
+        setOpenWindow(id)
     }
     const searchHistiry = () => {
         setLoadingTable(true)
@@ -903,12 +897,6 @@ const Layout = (props) => {
                 </div>
                 <div class="w-100 mt-4 "></div>
                 {renderSwitch(page)}
-                <GoogleMapExample
-                    containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
-                    mapElement={<div style={{ height: `100%` }} />}
-                    mark={meters}
-                    isMarkerShown
-                />
             </div>
         </div >
     )

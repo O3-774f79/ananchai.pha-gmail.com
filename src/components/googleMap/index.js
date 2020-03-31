@@ -1,49 +1,43 @@
 import React from 'react'
 const fetch = require("isomorphic-fetch");
-const { compose, withProps, withHandlers } = require("recompose");
+const { compose, withProps, withHandlers, withStateHandlers } = require("recompose");
 const {
     withScriptjs,
     withGoogleMap,
     GoogleMap,
     Marker,
+    InfoWindow
 } = require("react-google-maps");
 const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
-
 const MapWithAMarkerClusterer = compose(
-    withProps({
-        googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyD2CgOkigvSSaZgqJho8HJ1vtUyGxFvK1g",
-        loadingElement: <div style={{ height: `100%` }} />,
-        containerElement: <div style={{ height: `400px` }} />,
-        mapElement: <div style={{ height: `100%` }} />,
-    }),
-    withHandlers({
-        onMarkerClustererClick: () => (markerClusterer) => {
-            const clickedMarkers = markerClusterer.getMarkers()
-            console.log(`Current clicked markers length: ${clickedMarkers.length}`)
-            console.log(clickedMarkers)
-        },
+    withStateHandlers(() => ({
+        isOpen: false,
+    }), {
+        onToggleOpen: ({ isOpen }) => () => ({
+            isOpen: !isOpen,
+        })
     }),
     withScriptjs,
     withGoogleMap
 )(props =>
     <GoogleMap
-        defaultZoom={3}
-        defaultCenter={{ lat: 13.53139, lng: 100.92252 }}
+        defaultZoom={8}
+        defaultCenter={{ lat: -34.397, lng: 150.644 }}
     >
-        <MarkerClusterer
-            onClick={props.onMarkerClustererClick}
-            averageCenter
-            enableRetinaIcons
-            gridSize={60}
-        >
-            <Marker position={{ lat: 13.53139, lng: 100.92252 }} />
-            {/* {props.markers.map(marker => (
         <Marker
-          key={marker.photo_id}
-          position={{ lat: marker.latitude, lng: marker.longitude }}
-        />
-      ))} */}
-        </MarkerClusterer>
+            position={{ lat: -34.395, lng: 150.644 }}
+            onClick={props.onToggleOpen}
+        >
+            <Marker
+                position={{ lat: -34.397, lng: 150.644 }}
+                onClick={props.onToggleOpen}
+            ></Marker>
+            {props.isOpen && <InfoWindow onCloseClick={props.onToggleOpen}>
+                <div>
+                    Controlled zoom
+       </div>
+            </InfoWindow>}
+        </Marker>
     </GoogleMap>
 );
 
@@ -69,7 +63,12 @@ class DemoApp extends React.PureComponent {
 
     render() {
         return (
-            <MapWithAMarkerClusterer markers={this.state.markers} />
+            <MapWithAMarkerClusterer markers={this.state.markers}
+                googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2CgOkigvSSaZgqJho8HJ1vtUyGxFvK1g"
+                loadingElement={<div style={{ height: `100%` }} />}
+                containerElement={<div style={{ height: `400px` }} />}
+                mapElement={<div style={{ height: `100%` }} />}
+            />
         )
     }
 }
