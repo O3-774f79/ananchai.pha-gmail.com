@@ -508,6 +508,22 @@ const Layout = (props) => {
                 console.log(err)
             })
     }
+    const renderCSV = props => {
+        let header = []
+        headerTable.map(item => { if (item.status == true) header.push(item) })
+        console.log("header", header)
+        if (dataExport.length > 0 && header.length > 0) {
+            return (
+                <div class="row justify-content-end">
+                    <div class=" col-md-3 col-sm-12">
+                        <CSVLink asyncOnClick={true}
+                            data={dataExport} headers={header} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
+                    </div>
+                </div >)
+        } else {
+            return null
+        }
+    }
     const renderSwitch = (page) => {
         switch (page) {
             case 'home':
@@ -639,21 +655,22 @@ const Layout = (props) => {
                                             return <Column title={item.title} dataIndex={item.dataIndex} key={item.key} />
                                         }
                                     })}
-                                </Table>;
+                                </Table>
                             </div>
                             <div class="w-100 clearfix"></div>
-                            {dataExport.length > 0 && headerTable.length > 0 ?
+                            {renderCSV()}
+                            {/* {dataExport.length > 0 && headerTable.length > 0 ?
                                 <div class="row justify-content-end">
                                     <div class=" col-md-3 col-sm-12">
                                         <CSVLink asyncOnClick={true}
                                             data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
-                                    </div>
-                                    {/* <div class="col-md-3  col-sm-12">
+                                    </div> */}
+                            {/* <div class="col-md-3  col-sm-12">
                                         <button class="btn btn-primary btn-block mb-2" disabled>Excel Export</button>
 
                                     </div> */}
-                                </div>
-                                : null}
+                            {/* </div>
+                                : null} */}
                         </div >
                     </span >)
             case "meterdetail":
