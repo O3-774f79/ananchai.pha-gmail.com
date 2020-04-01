@@ -642,7 +642,7 @@ const Layout = (props) => {
                                 </Table>;
                             </div>
                             <div class="w-100 clearfix"></div>
-                            {dataExport.length > 0 ?
+                            {dataExport.length > 0 && headerTable.length > 0 ?
                                 <div class="row justify-content-end">
                                     <div class=" col-md-3 col-sm-12">
                                         <CSVLink asyncOnClick={true}
