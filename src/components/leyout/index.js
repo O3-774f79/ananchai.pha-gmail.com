@@ -308,6 +308,9 @@ const Layout = (props) => {
                 <GoogleMap
                     defaultCenter={{ lat: 13.53139, lng: 100.92252 }}
                     defaultZoom={11}
+                    defaultOptions={{
+                        scrollwheel: true,
+                    }}
                 >
                     <MarkerClusterer
                         averageCenter
