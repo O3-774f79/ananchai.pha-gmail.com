@@ -470,7 +470,7 @@ const Layout = (props) => {
     }
     const searchHistiry = () => {
         setLoadingTable(true)
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + startDate.toISOString() + "&&" + "endDate=" + endDate.toISOString())
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(startDate).toISOString() + "&&" + "endDate=" + endDate.toISOString())
             .then(async res => {
                 res.data.history.map(item => {
                     return (
@@ -478,7 +478,7 @@ const Layout = (props) => {
                         item["MeterID"] = res.data.thingDetail.MeterID,
                         item["MeterType"] = res.data.thingDetail.MeterType,
                         item["RateType"] = res.data.thingDetail.RateType,
-                        item["Location"] = res.data.thingDetail.Location,
+                        item["Location"] = res.data.thingDetail.Location[0] + "," + res.data.thingDetail.Location[1],
                         item["TranfomerID"] = TranformerIDReport,
                         item["V1"] = item.Sensors.V1,
                         item["V2"] = item.Sensors.V2,
@@ -487,7 +487,7 @@ const Layout = (props) => {
                         item["KW"] = item.Sensors.KW,
                         item["KWH"] = item.Sensors.KWH,
                         item["KVARH"] = item.Sensors.KVARH,
-                        item["created"] = item.created //new Date(item.created)
+                        item["created"] = new Date(item.created).toISOString().split("T")[0]+":"+new Date(item.created).toISOString().split("T")[1].split(".")[0] //new Date(item.created)
                     )
                 }
                 )
@@ -623,6 +623,7 @@ const Layout = (props) => {
                         </div>
                         <div id="ShowSearch">
                             <div class="table-responsive ">
+                                {console.log(dataExport)}
                                 <Table dataSource={dataExport} loading={loadingTable}>
                                     {headerTable.map(item => {
                                         if (item.status === true) {
