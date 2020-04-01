@@ -319,7 +319,8 @@ const Layout = (props) => {
                         maxZoom={15}
                     >
                         {props.mark.map(loca =>
-                            <Marker key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
+                            <Marker
+                                label={loca.MeterName} key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
                                 {props.meterId == loca.MeterID &&
                                     <InfoWindow
                                     >
