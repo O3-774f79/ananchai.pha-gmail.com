@@ -623,7 +623,6 @@ const Layout = (props) => {
                         </div>
                         <div id="ShowSearch">
                             <div class="table-responsive ">
-                                {console.log(dataExport)}
                                 <Table dataSource={dataExport} loading={loadingTable}>
                                     {headerTable.map(item => {
                                         if (item.status === true) {
