@@ -465,12 +465,9 @@ const Layout = (props) => {
                 setLoad(true)
             })
     }
-    const setInfoWindow = (id) => {
-        setOpenWindow(id)
-    }
     const searchHistiry = () => {
         setLoadingTable(true)
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(startDate).toISOString() + "&&" + "endDate=" + endDate.toISOString())
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString() + "&&" + "endDate=" + new Date(endDate).toISOString())
             .then(async res => {
                 res.data.history.map(item => {
                     return (
@@ -487,7 +484,7 @@ const Layout = (props) => {
                         item["KW"] = item.Sensors.KW,
                         item["KWH"] = item.Sensors.KWH,
                         item["KVARH"] = item.Sensors.KVARH,
-                        item["created"] = new Date(item.created).toISOString().split("T")[0]+":"+new Date(item.created).toISOString().split("T")[1].split(".")[0] //new Date(item.created)
+                        item["created"] = new Date(new Date(item.created).toLocaleString("en-US", { timeZone: "Asia/Bangkok" })).toLocaleString() //new Date(item.created)
                     )
                 }
                 )
@@ -623,7 +620,7 @@ const Layout = (props) => {
                         </div>
                         <div id="ShowSearch">
                             <div class="table-responsive ">
-                                <Table dataSource={dataExport} loading={loadingTable}>
+                                <Table dataSource={dataExport} loading={loadingTable} className="myTable" >
                                     {headerTable.map(item => {
                                         if (item.status === true) {
                                             return <Column title={item.title} dataIndex={item.dataIndex} key={item.key} />
@@ -635,7 +632,8 @@ const Layout = (props) => {
                             {dataExport.length > 0 ?
                                 <div class="row justify-content-end">
                                     <div class=" col-md-3 col-sm-12">
-                                        <CSVLink data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
+                                        <CSVLink asyncOnClick={true}
+                                            data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
                                     </div>
                                     {/* <div class="col-md-3  col-sm-12">
                                         <button class="btn btn-primary btn-block mb-2" disabled>Excel Export</button>
