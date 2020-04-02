@@ -27,16 +27,15 @@ const { Column } = Table;
 
 
 const Layout = (props) => {
-    const [flag, setFlag] = useState(0)
+    const [pageLoading, setPageLoading] = useState(false)
+    const [meterDetailFlag, setMeterDetailFlag] = useState(false)
     const [hamberger, setHamberger] = useState(true);
     const [page, setPage] = useState("home")
-    const [openWindow, setOpenWindow] = useState("")
     const [tranformers, setTranformer] = useState([])
     const [meters, setMeters] = useState([])
     const [startDate, setStartDate] = useState(new Date().setDate(new Date().getDate() - 1));
     const [endDate, seEndDate] = useState(new Date());
     const [meterDetail, setMeterdetail] = useState({})
-    const [MeterDataArray, setMeterDataArray] = useState([])
     const [TranformerIDReport, SetTranformerIDReport] = useState(0)
     const [MeterIDReport, setMeterIDReport] = useState(0)
     const [MeterSetReport, setMeterSetReport] = useState([])
@@ -320,7 +319,7 @@ const Layout = (props) => {
                     >
                         {props.mark.map(loca =>
                             <Marker
-                                label={{color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
+                                label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
                                 {props.meterId == loca.MeterID &&
                                     <InfoWindow
                                     >
@@ -453,6 +452,7 @@ const Layout = (props) => {
             })
     }
     const openMeterDetail = (meter) => {
+        let meterId = meter.MeterIMEI
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
                 meter["detail"] = res.data
@@ -462,11 +462,10 @@ const Layout = (props) => {
                 await setPage("meterdetail")
             })
             .catch(err => {
-                // setError(err.message);
                 setLoad(true)
             })
         setInterval(function () {
-            axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
+            axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meterId)
                 .then(async res => {
                     meter["detail"] = res.data
                     await setMeterdetail(meter)
@@ -474,7 +473,6 @@ const Layout = (props) => {
                     await InquiryGraph(meter.MeterIMEI)
                 })
                 .catch(err => {
-                    // setError(err.message);
                     setLoad(true)
                 })
         }, 60000)
@@ -744,6 +742,8 @@ const Layout = (props) => {
                                                 />
                                                 <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V3 ? meterDetail.detail?.Sensors.V3 : 0} V</span>
                                             </div>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap" }}>
                                             <div> <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line1</h5>
                                                 <GaugeChart id="gauge-chart7"
                                                     style={{ width: 120 }}
