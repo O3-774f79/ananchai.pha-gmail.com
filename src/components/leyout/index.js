@@ -315,8 +315,8 @@ const Layout = (props) => {
                     <MarkerClusterer
                         averageCenter
                         enableRetinaIcons
-                        gridSize={45}
-                        maxZoom={15}
+                        gridSize={60}
+                        maxZoom={19}
                     >
                         {props.mark.map(loca =>
                             <Marker
