@@ -452,8 +452,8 @@ const Layout = (props) => {
             })
     }
     const openMeterDetail = (meter) => {
-        let meterId = meter.MeterIMEI
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
+        setMeterDetailFlag(meter.MeterIMEI)
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meterDetailFlag)
             .then(async res => {
                 meter["detail"] = res.data
                 await setMeterdetail(meter)
@@ -464,18 +464,18 @@ const Layout = (props) => {
             .catch(err => {
                 setLoad(true)
             })
-        setInterval(function () {
-            axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meterId)
-                .then(async res => {
-                    meter["detail"] = res.data
-                    await setMeterdetail(meter)
-                    await setLoad(true);
-                    await InquiryGraph(meter.MeterIMEI)
-                })
-                .catch(err => {
-                    setLoad(true)
-                })
-        }, 60000)
+        // setInterval(function () {
+        //     axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meterDetailFlag)
+        //         .then(async res => {
+        //             meter["detail"] = res.data
+        //             await setMeterdetail(meter)
+        //             await setLoad(true);
+        //             await InquiryGraph(meter.MeterIMEI)
+        //         })
+        //         .catch(err => {
+        //             setLoad(true)
+        //         })
+        // }, 20000)
     }
     const searchHistiry = () => {
         setLoadingTable(true)
