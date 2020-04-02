@@ -28,7 +28,7 @@ const { Column } = Table;
 
 const Layout = (props) => {
     const [pageLoading, setPageLoading] = useState(false)
-    const [meterDetailFlag, setMeterDetailFlag] = useState(false)
+    const [meterDetailFlag, setMeterDetailFlag] = useState("")
     const [hamberger, setHamberger] = useState(true);
     const [page, setPage] = useState("home")
     const [tranformers, setTranformer] = useState([])
@@ -454,6 +454,7 @@ const Layout = (props) => {
     }
     const openMeterDetail = async (meter) => {
         await setPageLoading(true)
+        await clearInterval(meterDetailFlag)
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
                 if (res.data?.created) {
@@ -474,7 +475,6 @@ const Layout = (props) => {
                 await InquiryGraph(meter.MeterIMEI)
                 await setPage("meterdetail")
                 await setPageLoading(false)
-
             })
             .catch(err => {
                 setLoad(true)
@@ -494,20 +494,13 @@ const Layout = (props) => {
                     } else {
                         meter["detail"] = res.data
                     }
-                    // meter["detail"] = res.data
                     await setMeterdetail(meter)
-                    // await setLoad(true);
-                    // await InquiryGraph(meter.MeterIMEI)
-                    // await setPage("meterdetail")
-                    // meter["detail"] = res.data
-                    // await setMeterdetail(meter)
-                    // await setLoad(true);
-                    // await InquiryGraph(meter.MeterIMEI)
                 })
                 .catch(err => {
                     setLoad(true)
                 })
         }, 60000)
+        await setMeterDetailFlag(myVar)
     }
     const searchHistiry = () => {
         setLoadingTable(true)
@@ -873,7 +866,7 @@ const Layout = (props) => {
                             <div style={{ width: '100%' }}>
                                 <HighchartsReact
                                     style={{
-                                        width: "100%", height: 400, display: "block", alignContent: 'center'
+                                        width: "100%", height: 400, display: "block", float: "right"
                                     }}
                                     highcharts={Highcharts}
                                     options={VoltageOption}
