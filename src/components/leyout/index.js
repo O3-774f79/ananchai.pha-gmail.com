@@ -452,10 +452,21 @@ const Layout = (props) => {
             })
     }
     const openMeterDetail = (meter) => {
-        setMeterDetailFlag(meter.MeterIMEI)
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meterDetailFlag)
+        axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
-                meter["detail"] = res.data
+                if (res.data?.created) {
+                    let date1m = new Date(res.data.created)
+                    let dateCurrent = new Date()
+                    if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
+                        meter["detail"] = null
+                    } else {
+                        console.log("elseMath");
+                        meter["detail"] = res.data
+                    }
+                } else {
+                    meter["detail"] = res.data
+                }
+                // meter["detail"] = res.data
                 await setMeterdetail(meter)
                 await setLoad(true);
                 await InquiryGraph(meter.MeterIMEI)
@@ -464,18 +475,18 @@ const Layout = (props) => {
             .catch(err => {
                 setLoad(true)
             })
-        // setInterval(function () {
-        //     axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meterDetailFlag)
-        //         .then(async res => {
-        //             meter["detail"] = res.data
-        //             await setMeterdetail(meter)
-        //             await setLoad(true);
-        //             await InquiryGraph(meter.MeterIMEI)
-        //         })
-        //         .catch(err => {
-        //             setLoad(true)
-        //         })
-        // }, 20000)
+        setInterval(function () {
+            axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
+                .then(async res => {
+                    meter["detail"] = res.data
+                    await setMeterdetail(meter)
+                    await setLoad(true);
+                    await InquiryGraph(meter.MeterIMEI)
+                })
+                .catch(err => {
+                    setLoad(true)
+                })
+        }, 60000)
     }
     const searchHistiry = () => {
         setLoadingTable(true)
@@ -801,20 +812,20 @@ const Layout = (props) => {
                                         <div class="row">
                                             <div class="col">
                                                 <h4 class="">  Total Active Power <br /> </h4>
-                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KW : 0} kW</h5>
+                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KW : 0} kw</h5>
                                                 <hr />
                                                 <h4 class="">  Total Active Energy <br /> </h4>
-                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KWH : 0} kW</h5>
+                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KWH : 0} kWh</h5>
 
                                             </div>
 
 
                                             <div class="col">
                                                 <h4 class="">  Total Reactive Power <br /> </h4>
-                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KVAR : 0} Kvar</h5>
+                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KVAR : 0} kVar</h5>
                                                 <hr />
                                                 <h4 class="">  Total Reactive Energy <br /> </h4>
-                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KVARH : 0} Kvarh</h5>
+                                                <h5 class="text-Primary">{meterDetail.detail ? meterDetail.detail?.Sensors.KVARH : 0} kVarh</h5>
                                             </div>
                                         </div>
                                     </div>
