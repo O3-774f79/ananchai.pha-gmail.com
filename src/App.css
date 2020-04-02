@@ -27,6 +27,9 @@
 .App-link {
   color: #61dafb;
 }
+thead[class*="ant-table-thead"] th{
+  background-color: yellow !important;
+}
 
 @keyframes App-logo-spin {
   from {

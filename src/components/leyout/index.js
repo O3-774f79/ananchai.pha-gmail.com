@@ -452,8 +452,8 @@ const Layout = (props) => {
                 setLoad(true)
             })
     }
-    const openMeterDetail = (meter) => {
-        setPageLoading(true)
+    const openMeterDetail = async (meter) => {
+        await setPageLoading(true)
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
                 if (res.data?.created) {
@@ -474,11 +474,12 @@ const Layout = (props) => {
                 await InquiryGraph(meter.MeterIMEI)
                 await setPage("meterdetail")
                 await setPageLoading(false)
+
             })
             .catch(err => {
                 setLoad(true)
             })
-        setInterval(function () {
+        var myVar = setInterval(function () {
             axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
                 .then(async res => {
                     if (res.data?.created) {
@@ -686,7 +687,7 @@ const Layout = (props) => {
                                     <Table dataSource={dataExport} loading={loadingTable} className="myTable" >
                                         {headerTable.map(item => {
                                             if (item.status === true) {
-                                                return <Column title={item.title} dataIndex={item.dataIndex} key={item.key} />
+                                                return <Column title={item.title} dataIndex={item.dataIndex} key={item.key} style={{ backgroundColor: 'yellow' }} />
                                             }
                                         })}
                                     </Table>
@@ -730,102 +731,108 @@ const Layout = (props) => {
                                 <div class="card h-100">
                                     <div class="card-body text-left">
                                         <h4 class=""> Instantaneous value : </h4>
-                                        <div style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap" }}>
-                                            <div>  <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line1</h5>
-                                                <GaugeChart id="gauge-chart2"
-                                                    style={{ width: 120 }}
-                                                    nrOfLevels={440}
-                                                    arcPadding={0}
-                                                    cornerRadius={0}
-                                                    percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V1 * 100) / 440) / 100) : 0}
-                                                    arcsLength={[0.40, 0.20, 0.40]}
-                                                    colors={['#ff5454', '#3dcc5b', '#efd613']}
-                                                    textColor={"#000000"}
-                                                    hideText={true}
-                                                    formatTextValue={value => value + 'V'}
-                                                />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V1 ? meterDetail.detail?.Sensors.V1 : 0} V</span>
+                                        <div style={{ display: 'flex',flexWrap:"wrap" }}>
+                                            <div style={{ width: '50%' }}>
+                                                <div style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap" }}>
+                                                    <div>  <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line1</h5>
+                                                        <GaugeChart id="gauge-chart2"
+                                                            style={{ width: 120 }}
+                                                            nrOfLevels={440}
+                                                            arcPadding={0}
+                                                            cornerRadius={0}
+                                                            percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V1 * 100) / 440) / 100) : 0}
+                                                            arcsLength={[0.40, 0.20, 0.40]}
+                                                            colors={['#ff5454', '#3dcc5b', '#efd613']}
+                                                            textColor={"#000000"}
+                                                            hideText={true}
+                                                            formatTextValue={value => value + 'V'}
+                                                        />
+                                                        <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V1 ? meterDetail.detail?.Sensors.V1 : 0} V</span>
+                                                    </div>
+                                                    <div>
+                                                        <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line2</h5>
+                                                        <GaugeChart id="gauge-chart5"
+                                                            style={{ width: 120 }}
+                                                            nrOfLevels={440}
+                                                            arcPadding={0}
+                                                            cornerRadius={0}
+                                                            arcsLength={[0.40, 0.20, 0.40]}
+                                                            colors={['#ff5454', '#3dcc5b', '#efd613']}
+                                                            hideText={true}
+                                                            percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V2 * 100) / 440) / 100) : 0}
+                                                            textColor={"#000000"}
+                                                            formatTextValue={value => value + 'V'}
+                                                        />
+                                                        <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V2 ? meterDetail.detail?.Sensors.V2 : 0} V</span>
+                                                    </div>
+                                                    <div>
+                                                        <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line3</h5>
+                                                        <GaugeChart id="gauge-chart1"
+                                                            style={{ width: 120 }}
+                                                            nrOfLevels={440}
+                                                            arcPadding={0}
+                                                            cornerRadius={0}
+                                                            hideText={true}
+                                                            arcsLength={[0.40, 0.20, 0.40]}
+                                                            colors={['#ff5454', '#3dcc5b', '#efd613']}
+                                                            percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V3 * 100) / 440) / 100) : 0}
+                                                            textColor={"#000000"}
+                                                            formatTextValue={value => value + 'V'}
+                                                        />
+                                                        <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V3 ? meterDetail.detail?.Sensors.V3 : 0} V</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line2</h5>
-                                                <GaugeChart id="gauge-chart5"
-                                                    style={{ width: 120 }}
-                                                    nrOfLevels={440}
-                                                    arcPadding={0}
-                                                    cornerRadius={0}
-                                                    arcsLength={[0.40, 0.20, 0.40]}
-                                                    colors={['#ff5454', '#3dcc5b', '#efd613']}
-                                                    hideText={true}
-                                                    percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V2 * 100) / 440) / 100) : 0}
-                                                    textColor={"#000000"}
-                                                    formatTextValue={value => value + 'V'}
-                                                />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V2 ? meterDetail.detail?.Sensors.V2 : 0} V</span>
-                                            </div>
-                                            <div>
-                                                <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line3</h5>
-                                                <GaugeChart id="gauge-chart1"
-                                                    style={{ width: 120 }}
-                                                    nrOfLevels={440}
-                                                    arcPadding={0}
-                                                    cornerRadius={0}
-                                                    hideText={true}
-                                                    arcsLength={[0.40, 0.20, 0.40]}
-                                                    colors={['#ff5454', '#3dcc5b', '#efd613']}
-                                                    percent={meterDetail.detail ? (((meterDetail.detail?.Sensors.V3 * 100) / 440) / 100) : 0}
-                                                    textColor={"#000000"}
-                                                    formatTextValue={value => value + 'V'}
-                                                />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.V3 ? meterDetail.detail?.Sensors.V3 : 0} V</span>
-                                            </div>
-                                        </div>
-                                        <div style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap" }}>
-                                            <div> <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line1</h5>
-                                                <GaugeChart id="gauge-chart7"
-                                                    style={{ width: 120 }}
-                                                    nrOfLevels={100}
-                                                    arcPadding={0}
-                                                    cornerRadius={0}
-                                                    hideText={true}
-                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I1 / 100) / 100) : 0}
-                                                    arcsLength={[0.8, 0.2]}
-                                                    colors={['#3dcc5b', '#ff5454']}
-                                                    textColor={"#000000"}
-                                                    formatTextValue={value => value + 'V'}
-                                                />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I1 ? meterDetail.detail?.Sensors.I1 : 0} A</span>
-                                            </div>
-                                            <div>
-                                                <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line2</h5>
-                                                <GaugeChart id="gauge-chart8"
-                                                    style={{ width: 120 }}
-                                                    nrOfLevels={100}
-                                                    arcPadding={0}
-                                                    cornerRadius={0}
-                                                    hideText={true}
-                                                    arcsLength={[0.8, 0.2]}
-                                                    colors={['#3dcc5b', '#ff5454']}
-                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I2 / 100) / 100) : 0}
-                                                    textColor={"#000000"}
-                                                    formatTextValue={value => value + 'V'}
-                                                />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I2 ? meterDetail.detail?.Sensors.I2 : 0} A</span>
-                                            </div>
-                                            <div>
-                                                <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line3</h5>
-                                                <GaugeChart id="gauge-chart9"
-                                                    style={{ width: 120 }}
-                                                    nrOfLevels={100}
-                                                    arcPadding={0}
-                                                    cornerRadius={0}
-                                                    hideText={true}
-                                                    arcsLength={[0.8, 0.2]}
-                                                    colors={['#3dcc5b', '#ff5454']}
-                                                    percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I3 / 100) / 100) : 0}
-                                                    textColor={"#000000"}
-                                                    formatTextValue={value => value + 'V'}
-                                                />
-                                                <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I3 ? meterDetail.detail?.Sensors.I3 : 0} A</span>
+                                            <div style={{ width: '50%' }}>
+                                                <div style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap" }}>
+                                                    <div> <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line1</h5>
+                                                        <GaugeChart id="gauge-chart7"
+                                                            style={{ width: 120 }}
+                                                            nrOfLevels={100}
+                                                            arcPadding={0}
+                                                            cornerRadius={0}
+                                                            hideText={true}
+                                                            percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I1 / 100) / 100) : 0}
+                                                            arcsLength={[0.8, 0.2]}
+                                                            colors={['#3dcc5b', '#ff5454']}
+                                                            textColor={"#000000"}
+                                                            formatTextValue={value => value + 'V'}
+                                                        />
+                                                        <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I1 ? meterDetail.detail?.Sensors.I1 : 0} A</span>
+                                                    </div>
+                                                    <div>
+                                                        <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line2</h5>
+                                                        <GaugeChart id="gauge-chart8"
+                                                            style={{ width: 120 }}
+                                                            nrOfLevels={100}
+                                                            arcPadding={0}
+                                                            cornerRadius={0}
+                                                            hideText={true}
+                                                            arcsLength={[0.8, 0.2]}
+                                                            colors={['#3dcc5b', '#ff5454']}
+                                                            percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I2 / 100) / 100) : 0}
+                                                            textColor={"#000000"}
+                                                            formatTextValue={value => value + 'V'}
+                                                        />
+                                                        <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I2 ? meterDetail.detail?.Sensors.I2 : 0} A</span>
+                                                    </div>
+                                                    <div>
+                                                        <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Current Line3</h5>
+                                                        <GaugeChart id="gauge-chart9"
+                                                            style={{ width: 120 }}
+                                                            nrOfLevels={100}
+                                                            arcPadding={0}
+                                                            cornerRadius={0}
+                                                            hideText={true}
+                                                            arcsLength={[0.8, 0.2]}
+                                                            colors={['#3dcc5b', '#ff5454']}
+                                                            percent={meterDetail.detail ? ((meterDetail.detail?.Sensors.I3 / 100) / 100) : 0}
+                                                            textColor={"#000000"}
+                                                            formatTextValue={value => value + 'V'}
+                                                        />
+                                                        <span style={{ display: 'flex', justifyContent: 'center', fontSize: 15, marginTop: -10 }}>{meterDetail.detail?.Sensors.I3 ? meterDetail.detail?.Sensors.I3 : 0} A</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -857,27 +864,30 @@ const Layout = (props) => {
                                 </div>
                             </div>
                         </div>
-                        <div style={{alignContent:'center'}}>
+                        <div style={{ alignContent: 'center' }}>
                             <div style={{ width: '100%' }}>
                                 <HighchartsReact
                                     style={{
-                                        width: "100%", height: 400, display: "block",alignContent:'center'
+                                        width: "100%", height: 400, display: "block", alignContent: 'center'
                                     }}
-                                    // style={{ width: '100%' }}
                                     highcharts={Highcharts}
                                     options={VoltageOption}
                                 />
                             </div>
                             <div style={{ width: '100%' }}>
                                 <HighchartsReact
-                                    style={{ width: '100%' }}
+                                    style={{
+                                        width: "100%", height: 400, display: "block", alignContent: 'center'
+                                    }}
                                     highcharts={Highcharts}
                                     options={loadprofileOptions}
                                 />
                             </div>
                             <div style={{ width: '100%' }}>
                                 <HighchartsReact
-                                    style={{ width: '100%' }}
+                                    style={{
+                                        width: "100%", height: 400, display: "block", alignContent: 'center'
+                                    }}
                                     highcharts={Highcharts}
                                     options={EnergyOptions}
                                 />
