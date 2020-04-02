@@ -1,7 +1,30 @@
+
+@media only screen and (min-width: 0px) {}
+.cardDisplay{
+  width: 100%
+}
 .overlay{
+  position: absolute;
+  top: 500px;
+  left: 20px;
+  width: 150px;
+  padding-left: 20px;
+  padding-top: 20;
+  height: 70px;
+  z-index: 10;
+  color: rgb(92, 92, 92);
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.8); /*dim the background*/
+}
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  .cardDisplay{
+    width: 300px
+  }
+  .overlay{
     position: absolute;
-    top: 40px;
-    left: 40px;
+    top: 300px;
+    left: 20px;
     width: 150px;
     padding-left: 20px;
     padding-top: 20;
@@ -11,6 +34,67 @@
     font-weight: bold;
     background-color: rgba(255, 255, 255, 0.8); /*dim the background*/
   }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {}
+@media only screen and (min-width: 1400px) {
+  .cardDisplay{
+    width: 330px
+  }
+  .overlay{
+    position: absolute;
+    top: 170px;
+    left: 20px;
+    width: 150px;
+    padding-left: 20px;
+    padding-top: 20;
+    height: 70px;
+    z-index: 10;
+    color: rgb(92, 92, 92);
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+}
+@media only screen and (min-width: 1920px) {
+  .cardDisplay{
+    width:400px
+  }
+  .overlay{
+    position: absolute;
+    top: 170px;
+    left: 20px;
+    width: 150px;
+    padding-left: 20px;
+    padding-top: 20;
+    height: 70px;
+    z-index: 10;
+    color: rgb(92, 92, 92);
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+}
+@media only screen and (min-width: 2560 px) {
+  .cardDisplay{
+    width:2000px
+  }
+  .overlay{
+    position: absolute;
+    top: 170px;
+    left: 20px;
+    width: 150px;
+    padding-left: 20px;
+    padding-top: 20;
+    height: 70px;
+    z-index: 10;
+    color: rgb(92, 92, 92);
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+}
   .react-datepicker__input-container {
     width: 100%;
   }
@@ -42,19 +126,7 @@
     border-radius: 50%;
     display: inline-block;
   }
-  .overlay{
-    position: absolute;
-    top: 170px;
-    left: 20px;
-    width: 150px;
-    padding-left: 20px;
-    padding-top: 20;
-    height: 70px;
-    z-index: 10;
-    color: rgb(92, 92, 92);
-    font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.8); /*dim the background*/
-  }
+
   .ant-checkbox-group{
     display: flex;
     flex-wrap: wrap;

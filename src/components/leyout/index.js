@@ -564,17 +564,16 @@ const Layout = (props) => {
                         <span>
                             <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "space-between" }}>
                                 <div style={{ display: "flex", flexWrap: 'wrap' }}>
-                                    <div style={{ marginRight: 2, width: 400 }}>
+                                    <div className="cardDisplay" style={{ marginRight: 2 }}>
                                         <div class="card" >
                                             <div class="card-body text-center">
                                                 <h4 class=""> All Active Power </h4>
                                                 <h5 class="text-primary">{activePower} KW</h5>
                                             </div>
                                         </div>
-
                                     </div>
-                                    <div style={{ marginRight: 2, width: 400 }}>
-                                        <div class="card">
+                                    <div className="cardDisplay" style={{ marginRight: 2 }}>
+                                        <div class="card" >
                                             <div class="card-body text-center">
                                                 <h4 class=""> All Active Energy </h4>
                                                 <h5 class="text-primary">{activeEnergy} KWH</h5>
@@ -583,16 +582,16 @@ const Layout = (props) => {
                                     </div>
                                 </div>
                                 <div style={{ display: "flex", flexWrap: 'wrap' }}>
-                                    <div style={{ marginRight: 2, width: 400 }}>
-                                        <div class="card">
+                                    <div className="cardDisplay" style={{ marginRight: 2 }}>
+                                        <div class="card" >
                                             <div class="card-body text-center">
                                                 <h4 class=""> Data Availability </h4>
                                                 <h5 class="text-primary">{dataAvailability}%</h5>
                                             </div>
                                         </div>
                                     </div>
-                                    <div style={{ marginRight: 2, width: 400 }}>
-                                        <div class="card">
+                                    <div className="cardDisplay" style={{ marginRight: 2 }}>
+                                        <div class="card" >
                                             <div class="card-body text-center">
                                                 <h4 class="">System Availability</h4>
                                                 <h5 class="text-primary">{systemAvailability}%</h5>
