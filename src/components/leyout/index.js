@@ -472,8 +472,8 @@ const Layout = (props) => {
                 await setMeterdetail(meter)
                 await setLoad(true);
                 await InquiryGraph(meter.MeterIMEI)
-                await setPageLoading(false)
                 await setPage("meterdetail")
+                await setPageLoading(false)
             })
             .catch(err => {
                 setLoad(true)
@@ -495,9 +495,9 @@ const Layout = (props) => {
                     }
                     // meter["detail"] = res.data
                     await setMeterdetail(meter)
-                    await setLoad(true);
-                    await InquiryGraph(meter.MeterIMEI)
-                    await setPage("meterdetail")
+                    // await setLoad(true);
+                    // await InquiryGraph(meter.MeterIMEI)
+                    // await setPage("meterdetail")
                     // meter["detail"] = res.data
                     // await setMeterdetail(meter)
                     // await setLoad(true);
@@ -857,27 +857,33 @@ const Layout = (props) => {
                                 </div>
                             </div>
                         </div>
-                        <div style={{ width: '100%' }}>
-                            <HighchartsReact
-                                style={{ width: '100%' }}
-                                highcharts={Highcharts}
-                                options={VoltageOption}
-                            />
+                        <div style={{alignContent:'center'}}>
+                            <div style={{ width: '100%' }}>
+                                <HighchartsReact
+                                    style={{
+                                        width: "100%", height: 400, display: "block",alignContent:'center'
+                                    }}
+                                    // style={{ width: '100%' }}
+                                    highcharts={Highcharts}
+                                    options={VoltageOption}
+                                />
+                            </div>
+                            <div style={{ width: '100%' }}>
+                                <HighchartsReact
+                                    style={{ width: '100%' }}
+                                    highcharts={Highcharts}
+                                    options={loadprofileOptions}
+                                />
+                            </div>
+                            <div style={{ width: '100%' }}>
+                                <HighchartsReact
+                                    style={{ width: '100%' }}
+                                    highcharts={Highcharts}
+                                    options={EnergyOptions}
+                                />
+                            </div>
                         </div>
-                        <div style={{ width: '100%' }}>
-                            <HighchartsReact
-                                style={{ width: '100%' }}
-                                highcharts={Highcharts}
-                                options={loadprofileOptions}
-                            />
-                        </div>
-                        <div style={{ width: '100%' }}>
-                            <HighchartsReact
-                                style={{ width: '100%' }}
-                                highcharts={Highcharts}
-                                options={EnergyOptions}
-                            />
-                        </div>
+
                     </Spin>
 
                 )
