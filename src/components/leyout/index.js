@@ -9,7 +9,7 @@ import meterOn from '../../img/Meter.svg'
 import axios from 'axios'
 import HighchartsReact from 'highcharts-react-official'
 import Highcharts, { wrap } from 'highcharts'
-import { Menu, Checkbox, Table, Row, Col } from 'antd';
+import { Menu, Checkbox, Table, Row, Col, Spin } from 'antd';
 import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
 import { CSVLink } from "react-csv";
 import GaugeChart from 'react-gauge-chart'
@@ -231,7 +231,7 @@ const Layout = (props) => {
         },
         credits: {
             enabled: false
-        },
+        }, responsive: true,
     }
     const EnergyOptions = {
         chart: {
@@ -291,7 +291,7 @@ const Layout = (props) => {
             }
         ], credits: {
             enabled: false
-        }
+        }, responsive: true
     }
     const GoogleMapExample = compose(
         withStateHandlers(() => ({
@@ -314,14 +314,15 @@ const Layout = (props) => {
                     <MarkerClusterer
                         averageCenter
                         enableRetinaIcons
-                        gridSize={60}
-                        maxZoom={19}
+                        gridSize={30}
+                        maxZoom={14}
                     >
                         {props.mark.map(loca =>
                             <Marker
                                 label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
                                 {props.meterId == loca.MeterID &&
                                     <InfoWindow
+                                        defaultOptions={{ disableAutoPan: true }}
                                     >
                                         <div>
                                             <p>Meter : {loca.MeterName}</p>
@@ -452,6 +453,7 @@ const Layout = (props) => {
             })
     }
     const openMeterDetail = (meter) => {
+        setPageLoading(true)
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
                 if (res.data?.created) {
@@ -470,6 +472,7 @@ const Layout = (props) => {
                 await setMeterdetail(meter)
                 await setLoad(true);
                 await InquiryGraph(meter.MeterIMEI)
+                await setPageLoading(false)
                 await setPage("meterdetail")
             })
             .catch(err => {
@@ -478,10 +481,27 @@ const Layout = (props) => {
         setInterval(function () {
             axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
                 .then(async res => {
-                    meter["detail"] = res.data
+                    if (res.data?.created) {
+                        let date1m = new Date(res.data.created)
+                        let dateCurrent = new Date()
+                        if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
+                            meter["detail"] = null
+                        } else {
+                            console.log("elseMath");
+                            meter["detail"] = res.data
+                        }
+                    } else {
+                        meter["detail"] = res.data
+                    }
+                    // meter["detail"] = res.data
                     await setMeterdetail(meter)
                     await setLoad(true);
                     await InquiryGraph(meter.MeterIMEI)
+                    await setPage("meterdetail")
+                    // meter["detail"] = res.data
+                    // await setMeterdetail(meter)
+                    // await setLoad(true);
+                    // await InquiryGraph(meter.MeterIMEI)
                 })
                 .catch(err => {
                     setLoad(true)
@@ -538,154 +558,159 @@ const Layout = (props) => {
         switch (page) {
             case 'home':
                 return (
-                    <span>
-                        <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "center" }}>
-                            <div style={{ width: "24%", marginRight: 2 }}>
-                                <div class="card" >
-                                    <div class="card-body text-center">
-                                        <h4 class=""> All Active Power </h4>
-                                        <h5 class="text-primary">{activePower} KW</h5>
-                                    </div>
-                                </div>
+                    <Spin spinning={pageLoading}>
 
-                            </div>
-                            <div style={{ width: "24%", marginRight: 20 }}>
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <h4 class=""> All Active Energy </h4>
-                                        <h5 class="text-primary">{activeEnergy} KWH</h5>
+                        <span>
+                            <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "center" }}>
+                                <div style={{ width: "24%", marginRight: 2 }}>
+                                    <div class="card" >
+                                        <div class="card-body text-center">
+                                            <h4 class=""> All Active Power </h4>
+                                            <h5 class="text-primary">{activePower} KW</h5>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div style={{ width: "24%", marginRight: 20 }}>
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h4 class=""> All Active Energy </h4>
+                                            <h5 class="text-primary">{activeEnergy} KWH</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ width: "24%", marginRight: 2 }}>
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h4 class=""> Data Availability </h4>
+                                            <h5 class="text-primary">{dataAvailability}%</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ width: "24%", marginRight: 2 }}>
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h4 class="">System Availability</h4>
+                                            <h5 class="text-primary">{systemAvailability}%</h5>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div style={{ width: "24%", marginRight: 2 }}>
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <h4 class=""> Data Availability </h4>
-                                        <h5 class="text-primary">{dataAvailability}%</h5>
+                            <div>
+                                <div class="overlay">
+                                    About Status <br />
+                                    <div style={{}}>
+                                        <div class="dotGreen"></div> Connected <br />
+                                        <div class="dotRed"></div> Disconnected
                                     </div>
                                 </div>
+                                <GoogleMapExample
+                                    containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
+                                    mapElement={<div style={{ height: `100%` }} />}
+                                    mark={meters}
+                                    isMarkerShown
+                                />
                             </div>
-                            <div style={{ width: "24%", marginRight: 2 }}>
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <h4 class="">System Availability</h4>
-                                        <h5 class="text-primary">{systemAvailability}%</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="overlay">
-                                About Status <br />
-                                <div style={{}}>
-                                    <div class="dotGreen"></div> Connected <br />
-                                    <div class="dotRed"></div> Disconnected
-                                    </div>
-                            </div>
-                            <GoogleMapExample
-                                containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
-                                mapElement={<div style={{ height: `100%` }} />}
-                                mark={meters}
-                                isMarkerShown
-                            />
-                        </div>
-                    </span >
+                        </span >
+                    </Spin>
                 )
             case 'report':
                 return (
-                    <span>
-                        <div class="row" style={{ marginRight: 0, marginLeft: 0 }}>
-                            <h5 class="pt-3">Report</h5>
-                        </div>
-                        <hr />
-                        {/* <div class="col-md-8 offset-md-2  pl-5"> */}
-                        <div style={{ display: "flex", flexWrap: "wrap" }}>
-                            <div class=" form-group row" style={{ display: "flex", width: '50%' }}>
-                                <div style={{ width: '45%', marginRight: 5 }}>
-                                    <div class="form-group">
-                                        <label class="control-label"> Transformer ID</label>
-                                        <select class="form-control custom-select" data-placeholder="Choose a Category" tabindex="1" value={TranformerIDReport} onChange={(e) => onSelectTranformerIDReportChange(e.target.value)}>
-                                            <option value={0}>{"Choose a TranformerID"}</option>
-                                            {tranformers.map(item =>
-                                                <option value={item.tranformerID}>{item.TranformerID}</option>
-                                            )}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div style={{ width: '45%', marginRight: 5 }}>
-                                    <div class="form-group">
-                                        <label class="control-label">Meter ID</label>
-                                        <select class="form-control custom-select" data-placeholder="Choose a MeterID" tabindex="1" value={MeterIDReport} onChange={(e) => setMeterIDReport(e.target.value)}>
-                                            <option value={0}>{"Choose a MeterID"}</option>
-                                            {MeterSetReport.map(item =>
-                                                <option value={item.MeterIMEI}>{item.MeterID}</option>
-                                            )}
-                                        </select>
-                                    </div>
-                                </div>
+                    <Spin spinning={pageLoading}>
+                        <span>
+                            <div class="row" style={{ marginRight: 0, marginLeft: 0 }}>
+                                <h5 class="pt-3">Report</h5>
                             </div>
-                            <div class=" form-group row" style={{ display: "flex", width: '50%', flexWrap: "wrap" }}>
-                                <div style={{ width: '45%', marginRight: 5 }}>
-                                    <label for="text" class="text-left">Start Date</label>
-                                    <div class="input-group">
-                                        <DatePicker class="form-control" selected={startDate} onChange={date => setStartDate(date)} dateFormat="dd/MM/yyyy" style={{ width: "100%" }} />
-                                        <i class="material-icons">
-                                            calendar_today</i>
+                            <hr />
+                            {/* <div class="col-md-8 offset-md-2  pl-5"> */}
+                            <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                <div class=" form-group row" style={{ display: "flex", width: '50%', marginLeft: 15 }}>
+                                    <div style={{ width: '45%', marginRight: 5 }}>
+                                        <div class="form-group">
+                                            <label class="control-label"> Transformer ID</label>
+                                            <select class="form-control custom-select" data-placeholder="Choose a Category" tabindex="1" value={TranformerIDReport} onChange={(e) => onSelectTranformerIDReportChange(e.target.value)}>
+                                                <option value={0}>{"Choose a TranformerID"}</option>
+                                                {tranformers.map(item =>
+                                                    <option value={item.tranformerID}>{item.TranformerID}</option>
+                                                )}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style={{ width: '45%', marginRight: 5 }}>
+                                        <div class="form-group">
+                                            <label class="control-label">Meter ID</label>
+                                            <select class="form-control custom-select" data-placeholder="Choose a MeterID" tabindex="1" value={MeterIDReport} onChange={(e) => setMeterIDReport(e.target.value)}>
+                                                <option value={0}>{"Choose a MeterID"}</option>
+                                                {MeterSetReport.map(item =>
+                                                    <option value={item.MeterIMEI}>{item.MeterID}</option>
+                                                )}
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                                {/* <div style={{
+                                <div class=" form-group row" style={{ display: "flex", width: '50%', flexWrap: "wrap" }}>
+                                    <div style={{ width: '45%', marginRight: 5 }}>
+                                        <label for="text" class="text-left">Start Date</label>
+                                        <div class="input-group">
+                                            <DatePicker class="form-control" selected={startDate} onChange={date => setStartDate(date)} dateFormat="dd/MM/yyyy" style={{ width: "100%" }} />
+                                            <i class="material-icons">
+                                                calendar_today</i>
+                                        </div>
+                                    </div>
+                                    {/* <div style={{
                                     marginLeft: 5, marginRight: 5, verticalAlign: "middle"
                                 }}><label class="pt-4">  to</label></div> */}
-                                <div style={{ width: '45%', marginRight: 5, flexWrap: "wrap" }}>
-                                    <label for="text" class="text-left">End Date</label>
-                                    <div class="input-group">
-                                        <DatePicker class="form-control" selected={endDate} onChange={date => seEndDate(date)} dateFormat="dd/MM/yyyy" />
-                                        <i class="material-icons">
-                                            calendar_today</i>
+                                    <div style={{ width: '45%', marginRight: 5, flexWrap: "wrap" }}>
+                                        <label for="text" class="text-left">End Date</label>
+                                        <div class="input-group">
+                                            <DatePicker class="form-control" selected={endDate} onChange={date => seEndDate(date)} dateFormat="dd/MM/yyyy" />
+                                            <i class="material-icons">
+                                                calendar_today</i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <br />
+                                    <h5>Select Header Report   </h5><span class="small text-secondary">*defualt Show all </span> <br /><br />
+                                    <form class="form-inline" style={{ width: '100%' }}>
+                                        <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => onCheckTableHeader(e)} />
+                                    </form>
+                                    <br />
+                                    <div class="col-md-4 p-0">
+                                        <button class="btn btn-primary btn-block mb-2" id="btn-search" onClick={() => searchHistiry()}> Search</button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <br />
-                                <h5>Select Header Report   </h5><span class="small text-secondary">*defualt Show all </span> <br /><br />
-                                <form class="form-inline" style={{ width: '100%' }}>
-                                    <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => onCheckTableHeader(e)} />
-                                </form>
-                                <br />
-                                <div class="col-md-4 p-0">
-                                    <button class="btn btn-primary btn-block mb-2" id="btn-search" onClick={() => searchHistiry()}> Search</button>
+                            <div id="ShowSearch">
+                                <div class="table-responsive ">
+                                    <Table dataSource={dataExport} loading={loadingTable} className="myTable" >
+                                        {headerTable.map(item => {
+                                            if (item.status === true) {
+                                                return <Column title={item.title} dataIndex={item.dataIndex} key={item.key} />
+                                            }
+                                        })}
+                                    </Table>
                                 </div>
-                            </div>
-                        </div>
-                        <div id="ShowSearch">
-                            <div class="table-responsive ">
-                                <Table dataSource={dataExport} loading={loadingTable} className="myTable" >
-                                    {headerTable.map(item => {
-                                        if (item.status === true) {
-                                            return <Column title={item.title} dataIndex={item.dataIndex} key={item.key} />
-                                        }
-                                    })}
-                                </Table>
-                            </div>
-                            <div class="w-100 clearfix"></div>
-                            {renderCSV()}
-                            {/* {dataExport.length > 0 && headerTable.length > 0 ?
+                                <div class="w-100 clearfix"></div>
+                                {renderCSV()}
+                                {/* {dataExport.length > 0 && headerTable.length > 0 ?
                                 <div class="row justify-content-end">
                                     <div class=" col-md-3 col-sm-12">
                                         <CSVLink asyncOnClick={true}
                                             data={dataExport} headers={headerTable} filename="meter.csv"> <button class="btn btn-primary btn-block mb-2"> CSV Export </button></CSVLink>
                                     </div> */}
-                            {/* <div class="col-md-3  col-sm-12">
+                                {/* <div class="col-md-3  col-sm-12">
                                         <button class="btn btn-primary btn-block mb-2" disabled>Excel Export</button>
 
                                     </div> */}
-                            {/* </div>
+                                {/* </div>
                                 : null} */}
-                        </div >
-                    </span >)
+                            </div >
+                        </span >
+                    </Spin>)
             case "meterdetail":
                 return (
-                    <div>
+                    <Spin spinning={pageLoading}>
                         <div class="row">
                             <div class="col-lg-4 col-md-6 ">
                                 <div class="card h-100">
@@ -853,7 +878,8 @@ const Layout = (props) => {
                                 options={EnergyOptions}
                             />
                         </div>
-                    </div>
+                    </Spin>
+
                 )
             default:
                 return 'foo';
