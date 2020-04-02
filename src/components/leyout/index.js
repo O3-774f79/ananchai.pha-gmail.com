@@ -320,7 +320,7 @@ const Layout = (props) => {
                     >
                         {props.mark.map(loca =>
                             <Marker
-                                label={loca.MeterName} key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
+                                label={{color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
                                 {props.meterId == loca.MeterID &&
                                     <InfoWindow
                                     >
