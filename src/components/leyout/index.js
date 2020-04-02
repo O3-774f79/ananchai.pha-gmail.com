@@ -562,40 +562,46 @@ const Layout = (props) => {
                     <Spin spinning={pageLoading}>
 
                         <span>
-                            <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "center" }}>
-                                <div style={{ width: "24%", marginRight: 2 }}>
-                                    <div class="card" >
-                                        <div class="card-body text-center">
-                                            <h4 class=""> All Active Power </h4>
-                                            <h5 class="text-primary">{activePower} KW</h5>
+                            <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "space-between" }}>
+                                <div style={{ display: "flex", flexWrap: 'wrap' }}>
+                                    <div style={{ marginRight: 2, width: 400 }}>
+                                        <div class="card" >
+                                            <div class="card-body text-center">
+                                                <h4 class=""> All Active Power </h4>
+                                                <h5 class="text-primary">{activePower} KW</h5>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                </div>
-                                <div style={{ width: "24%", marginRight: 20 }}>
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <h4 class=""> All Active Energy </h4>
-                                            <h5 class="text-primary">{activeEnergy} KWH</h5>
+                                    </div>
+                                    <div style={{ marginRight: 2, width: 400 }}>
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h4 class=""> All Active Energy </h4>
+                                                <h5 class="text-primary">{activeEnergy} KWH</h5>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div style={{ width: "24%", marginRight: 2 }}>
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <h4 class=""> Data Availability </h4>
-                                            <h5 class="text-primary">{dataAvailability}%</h5>
+                                <div style={{ display: "flex", flexWrap: 'wrap' }}>
+                                    <div style={{ marginRight: 2, width: 400 }}>
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h4 class=""> Data Availability </h4>
+                                                <h5 class="text-primary">{dataAvailability}%</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style={{ marginRight: 2, width: 400 }}>
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h4 class="">System Availability</h4>
+                                                <h5 class="text-primary">{systemAvailability}%</h5>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div style={{ width: "24%", marginRight: 2 }}>
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <h4 class="">System Availability</h4>
-                                            <h5 class="text-primary">{systemAvailability}%</h5>
-                                        </div>
-                                    </div>
-                                </div>
+
+
                             </div>
                             <div>
                                 <div class="overlay">
@@ -624,9 +630,9 @@ const Layout = (props) => {
                             </div>
                             <hr />
                             {/* <div class="col-md-8 offset-md-2  pl-5"> */}
-                            <div style={{ display: "flex", flexWrap: "wrap" }}>
-                                <div class=" form-group row" style={{ display: "flex", width: '50%', marginLeft: 15 }}>
-                                    <div style={{ width: '45%', marginRight: 5 }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
+                                <div class=" form-group row" style={{ display: "flex", marginLeft: 15, flexWrap: "wrap", }}>
+                                    <div style={{ marginRight: 5, width: 350 }}>
                                         <div class="form-group">
                                             <label class="control-label"> Transformer ID</label>
                                             <select class="form-control custom-select" data-placeholder="Choose a Category" tabindex="1" value={TranformerIDReport} onChange={(e) => onSelectTranformerIDReportChange(e.target.value)}>
@@ -637,7 +643,7 @@ const Layout = (props) => {
                                             </select>
                                         </div>
                                     </div>
-                                    <div style={{ width: '45%', marginRight: 5 }}>
+                                    <div style={{ marginRight: 5, width: 350 }}>
                                         <div class="form-group">
                                             <label class="control-label">Meter ID</label>
                                             <select class="form-control custom-select" data-placeholder="Choose a MeterID" tabindex="1" value={MeterIDReport} onChange={(e) => setMeterIDReport(e.target.value)}>
@@ -649,8 +655,8 @@ const Layout = (props) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class=" form-group row" style={{ display: "flex", width: '50%', flexWrap: "wrap" }}>
-                                    <div style={{ width: '45%', marginRight: 5 }}>
+                                <div class=" form-group row" style={{ display: "flex", marginLeft: 20, flexWrap: "wrap", }}>
+                                    <div style={{ marginRight: 5 }}>
                                         <label for="text" class="text-left">Start Date</label>
                                         <div class="input-group">
                                             <DatePicker class="form-control" selected={startDate} onChange={date => setStartDate(date)} dateFormat="dd/MM/yyyy" style={{ width: "100%" }} />
@@ -661,7 +667,7 @@ const Layout = (props) => {
                                     {/* <div style={{
                                     marginLeft: 5, marginRight: 5, verticalAlign: "middle"
                                 }}><label class="pt-4">  to</label></div> */}
-                                    <div style={{ width: '45%', marginRight: 5, flexWrap: "wrap" }}>
+                                    <div style={{ marginRight: 5, flexWrap: "wrap" }}>
                                         <label for="text" class="text-left">End Date</label>
                                         <div class="input-group">
                                             <DatePicker class="form-control" selected={endDate} onChange={date => seEndDate(date)} dateFormat="dd/MM/yyyy" />
@@ -670,16 +676,16 @@ const Layout = (props) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-12">
-                                    <br />
-                                    <h5>Select Header Report   </h5><span class="small text-secondary">*defualt Show all </span> <br /><br />
-                                    <form class="form-inline" style={{ width: '100%' }}>
-                                        <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => onCheckTableHeader(e)} />
-                                    </form>
-                                    <br />
-                                    <div class="col-md-4 p-0">
-                                        <button class="btn btn-primary btn-block mb-2" id="btn-search" onClick={() => searchHistiry()}> Search</button>
-                                    </div>
+                            </div>
+                            <div class="col-md-12">
+                                <br />
+                                <h5>Select Header Report   </h5><span class="small text-secondary">*defualt Show all </span> <br /><br />
+                                <form class="form-inline" style={{ width: '100%' }}>
+                                    <Checkbox.Group options={tableHeader} defaultValue={tableHeaderSet} onChange={(e) => onCheckTableHeader(e)} />
+                                </form>
+                                <br />
+                                <div class="col-md-4 p-0">
+                                    <button class="btn btn-primary btn-block mb-2" id="btn-search" onClick={() => searchHistiry()}> Search</button>
                                 </div>
                             </div>
                             <div id="ShowSearch">
@@ -731,7 +737,7 @@ const Layout = (props) => {
                                 <div class="card h-100">
                                     <div class="card-body text-left">
                                         <h4 class=""> Instantaneous value : </h4>
-                                        <div style={{ display: 'flex',flexWrap:"wrap" }}>
+                                        <div style={{ display: 'flex', flexWrap: "wrap" }}>
                                             <div style={{ width: '50%' }}>
                                                 <div style={{ display: "flex", justifyContent: 'center', flexWrap: "wrap" }}>
                                                     <div>  <h5 style={{ textAlign: "center", fontSize: 14, color: "black" }}>Voltage Line1</h5>
