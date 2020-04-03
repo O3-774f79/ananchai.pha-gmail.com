@@ -297,8 +297,8 @@ const Layout = (props) => {
         withStateHandlers(() => ({
             meterId: ''
         }), {
-            onToggleOpen: ({ isOpen }) => (props) => ({
-                meterId: props.tb.target.offsetParent.title
+            onToggleOpen: ({ isOpen }) => (props) =>({
+                // meterId: props.tb.target.offsetParent.title
             }
             )
         }),
@@ -318,7 +318,7 @@ const Layout = (props) => {
                         maxZoom={14}
                     >
                         {props.mark.map(loca =>
-                            <Marker
+                            < Marker
                                 label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen}>
                                 {props.meterId == loca.MeterID &&
                                     <InfoWindow
@@ -336,7 +336,7 @@ const Layout = (props) => {
                             </Marker>)
                         }
                     </MarkerClusterer>
-                </GoogleMap>
+                </GoogleMap >
             )
 
         });
