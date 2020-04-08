@@ -557,7 +557,8 @@ const Layout = (props) => {
 
                         <span>
                             <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "space-between" }}>
-                                <div style={{ display: "flex", flexWrap: 'wrap', border: " 4px solid #7C67C8", borderRadius: "12px", padding: 1 }}>
+                                {/* , border: " 4px solid #7C67C8", borderRadius: "12px", padding: 1 */}
+                                <div style={{ display: "flex", flexWrap: 'wrap' }}>
                                     <div className="cardDisplay" style={{ marginRight: 2 }}>
                                         <div class="card" >
                                             <div class="card-body text-center">
@@ -575,7 +576,8 @@ const Layout = (props) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div style={{ display: "flex", flexWrap: 'wrap', border: " 4px solid #FFCC00", borderRadius: "12px", padding: 1 }}>
+                                {/* , border: " 4px solid #FFCC00", borderRadius: "12px", padding: 1  */}
+                                <div style={{ display: "flex", flexWrap: 'wrap' }}>
                                     <div className="cardDisplay" style={{ marginRight: 2 }}>
                                         <div class="card" >
                                             <div class="card-body text-center">
