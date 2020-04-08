@@ -298,7 +298,7 @@ const Layout = (props) => {
             meterId: ''
         }), {
             onToggleOpen: ({ isOpen }) => (props) =>
-            ({ meterId: props})
+                ({ meterId: props })
 
             //({ meterId: props.tb.target.offsetParent.title})
         }),
@@ -309,8 +309,8 @@ const Layout = (props) => {
                     defaultZoom={11}
                     defaultOptions={{
                         scrollwheel: true,
-                        mapTypeControl:false,
-                        streetViewControl:false
+                        mapTypeControl: false,
+                        streetViewControl: false
                     }}
                 >
                     <MarkerClusterer
@@ -321,7 +321,7 @@ const Layout = (props) => {
                     >
                         {props.mark.map(loca =>
                             < Marker
-                                label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} ownKey={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={()=>{ props.onToggleOpen( loca.MeterID)}}>
+                                label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} ownKey={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => { props.onToggleOpen(loca.MeterID) }}>
                                 {props.meterId == loca.MeterID &&
                                     <InfoWindow
                                         defaultOptions={{ disableAutoPan: true }}
@@ -465,7 +465,6 @@ const Layout = (props) => {
                     if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
                         meter["detail"] = null
                     } else {
-                        console.log("elseMath");
                         meter["detail"] = res.data
                     }
                 } else {
@@ -558,7 +557,7 @@ const Layout = (props) => {
 
                         <span>
                             <div style={{ display: "flex", flexWrap: 'wrap', justifyContent: "space-between" }}>
-                                <div style={{ display: "flex", flexWrap: 'wrap' }}>
+                                <div style={{ display: "flex", flexWrap: 'wrap', border: " 4px solid #7C67C8", borderRadius: "12px", padding: 1 }}>
                                     <div className="cardDisplay" style={{ marginRight: 2 }}>
                                         <div class="card" >
                                             <div class="card-body text-center">
@@ -576,7 +575,7 @@ const Layout = (props) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div style={{ display: "flex", flexWrap: 'wrap' }}>
+                                <div style={{ display: "flex", flexWrap: 'wrap', border: " 4px solid #FFCC00", borderRadius: "12px", padding: 1 }}>
                                     <div className="cardDisplay" style={{ marginRight: 2 }}>
                                         <div class="card" >
                                             <div class="card-body text-center">
