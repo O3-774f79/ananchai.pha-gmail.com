@@ -59,6 +59,8 @@ const Layout = (props) => {
     const [ReactiveEnergy, setReactiveEnergy] = useState([])
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
+    const [zoom, setZoom] = useState(11)
+    const [tranfomerLocation, setTranformerLocation] = useState([13.53139, 100.92252])
     useEffect(() => {
         axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
             .then(async res => {
@@ -305,8 +307,8 @@ const Layout = (props) => {
         withGoogleMap)(props => {
             return (
                 <GoogleMap
-                    defaultCenter={{ lat: 13.53139, lng: 100.92252 }}
-                    defaultZoom={11}
+                    center={{ lat: tranfomerLocation[0], lng: tranfomerLocation[1] }}
+                    zoom={zoom}
                     defaultOptions={{
                         scrollwheel: true,
                         mapTypeControl: false,
@@ -548,6 +550,15 @@ const Layout = (props) => {
         } else {
             return null
         }
+    }
+    const onSubMenuClick = a => {
+        setZoom(14)
+        setTranformerLocation([a[0], a[1]])
+    }
+    const onLocoClick = () => {
+        setZoom(11)
+        setPage("home")
+        setTranformerLocation([13.53139, 100.92252])
     }
     const renderSwitch = (page) => {
         switch (page) {
@@ -914,7 +925,7 @@ const Layout = (props) => {
                     :
                     <div style={{ height: "100%", overflow: "scroll" }}>
                         <span style={{ display: "flex" }}>
-                            <div class="sidebar-header" style={{ padding: "20px", cursor: "pointer" }} onClick={() => setPage("home")}>
+                            <div class="sidebar-header" style={{ padding: "20px", cursor: "pointer" }} onClick={() => onLocoClick()}>
                                 <img src={logoPEA} class="mx-auto d-flex" />
                             </div>
                             <div style={{ textAlign: "right", cursor: 'pointer', padding: "10px 20px", display: 'block' }}>
@@ -957,6 +968,7 @@ const Layout = (props) => {
                                         <SubMenu
                                             key={item.TranformerID}
                                             style={{ width: "230px" }}
+                                            onTitleClick={() => onSubMenuClick(item.Location)}
                                             title={
                                                 <span>
                                                     <img src={transformerLogo} height="18" width="auto" style={{ marginRight: 5 }} />
