@@ -507,7 +507,8 @@ const Layout = (props) => {
     }
     const searchHistiry = () => {
         setLoadingTable(true)
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString() + "&&" + "endDate=" + new Date(endDate).toISOString())
+        axios.get('http://localhost:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString() + "&&" + "endDate=" + new Date(endDate).toISOString())
+        // axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString() + "&&" + "endDate=" + new Date(endDate).toISOString())
             .then(async res => {
                 res.data.history.map(item => {
                     return (
@@ -517,13 +518,13 @@ const Layout = (props) => {
                         item["RateType"] = res.data.thingDetail.RateType,
                         item["Location"] = res.data.thingDetail.Location[0] + "," + res.data.thingDetail.Location[1],
                         item["TranfomerID"] = TranformerIDReport,
-                        item["V1"] = item.Sensors.V1,
-                        item["V2"] = item.Sensors.V2,
-                        item["V3"] = item.Sensors.V3,
-                        item["KVAR"] = item.Sensors.KVAR,
-                        item["KW"] = item.Sensors.KW,
-                        item["KWH"] = item.Sensors.KWH,
-                        item["KVARH"] = item.Sensors.KVARH,
+                        item["V1"] = item.Sensors.V1_LP,
+                        item["V2"] = item.Sensors.V2_LP,
+                        item["V3"] = item.Sensors.V3_LP,
+                        item["KVAR"] = item.Sensors.KVAR_LP,
+                        item["KW"] = item.Sensors.KW_LP,
+                        item["KWH"] = item.Sensors.KWH_LP,
+                        item["KVARH"] = item.Sensors.KVARH_LP,
                         item["created"] = new Date(new Date(item.created).toLocaleString("en-US", { timeZone: "Asia/Bangkok" })).toLocaleString() //new Date(item.created)
                     )
                 }
