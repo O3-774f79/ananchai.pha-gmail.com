@@ -59,9 +59,11 @@ const Layout = (props) => {
     const [ReactiveEnergy, setReactiveEnergy] = useState([])
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
-    const [zoom, setZoom] = useState(11)
-    const [tranfomerLocation, setTranformerLocation] = useState([13.53139, 100.92252])
+    const [zoom, setZoom] = useState()
+    const [tranfomerLocation, setTranformerLocation] = useState([])
     useEffect(() => {
+        setTranformerLocation([13.53139, 100.92252])
+        setZoom(11)
         axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
             .then(async res => {
                 let data = []
@@ -311,6 +313,7 @@ const Layout = (props) => {
                 <GoogleMap
                     center={{ lat: tranfomerLocation[0], lng: tranfomerLocation[1] }}
                     zoom={zoom}
+                    onCenterChanged={()=>console.log()}
                     defaultOptions={{
                         scrollwheel: true,
                         mapTypeControl: false,
@@ -325,7 +328,7 @@ const Layout = (props) => {
                     >
                         {props.mark.map(loca =>
                             < Marker
-                                label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} ownKey={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => { props.onToggleOpen(loca.MeterID) }} onMouseOut={() =>props.onToggleClose()}>
+                                label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} ownKey={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => { props.onToggleOpen(loca.MeterID) }} onMouseOut={() => props.onToggleClose()}>
                                 {props.meterId == loca.MeterID && props.showInfo == true &&
                                     <InfoWindow
                                         defaultOptions={{ disableAutoPan: true }}
