@@ -20,7 +20,7 @@ import {
 import 'antd/dist/antd.css';
 import './index.css'
 import "react-datepicker/dist/react-datepicker.css";
-const { compose, withProps, withHandlers, withStateHandlers } = require("recompose");
+const { compose, withProps, withState, withHandlers, withStateHandlers } = require("recompose");
 const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
 const { SubMenu } = Menu;
 const { Column } = Table;
@@ -308,12 +308,37 @@ const Layout = (props) => {
                 ({ showInfo: false }),
             //({ meterId: props.tb.target.offsetParent.title})
         }),
+        withState('zoom', 'onZoomChange', 8),
+        withState('center', 'onCenterChange'),
+        withHandlers(() => {
+            const refs = {
+                map: undefined,
+            }
+
+            return {
+                onMapMounted: () => ref => {
+                    refs.map = ref
+                },
+                onZoomChange: ({ onZoomChange }) => () => {
+                    setZoom(refs.map.getZoom())
+                    onZoomChange(refs.map.getZoom())
+                },
+                onCenterChange: ({ onCenterChange }) => () => {
+                    // setTranformerLocation([loc.Ya.i,loc.Ua.i])
+                    // console.log(refs.map.getBounds())
+                    // console.log(refs.map.getCenter())
+                    // onCenterChange(refs.map.getCenter())
+                },
+            }
+        }),
         withGoogleMap)(props => {
             return (
                 <GoogleMap
                     center={{ lat: tranfomerLocation[0], lng: tranfomerLocation[1] }}
                     zoom={zoom}
-                    onCenterChanged={()=>console.log()}
+                    ref={props.onMapMounted}
+                    onZoomChanged={props.onZoomChange}
+                    onCenterChanged={props.onCenterChange}
                     defaultOptions={{
                         scrollwheel: true,
                         mapTypeControl: false,
@@ -433,7 +458,6 @@ const Layout = (props) => {
     const inquirySystemAvailability = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
             .then(async res => {
-                console.log(res.data.value);
                 setSystemAvailability(res.data.value)
             })
             .catch(err => {
@@ -496,7 +520,6 @@ const Layout = (props) => {
                         if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
                             meter["detail"] = null
                         } else {
-                            console.log("elseMath");
                             meter["detail"] = res.data
                         }
                     } else {
@@ -543,7 +566,6 @@ const Layout = (props) => {
     const renderCSV = props => {
         let header = []
         headerTable.map(item => { if (item.status == true) header.push(item) })
-        console.log("header", header)
         if (dataExport.length > 0 && header.length > 0) {
             return (
                 <div class="row justify-content-end">
