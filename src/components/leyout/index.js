@@ -303,10 +303,14 @@ const Layout = (props) => {
             showInfo: false
         }), {
             onToggleOpen: ({ isOpen }) => (props) =>
-                ({ meterId: props, showInfo: true }),
+                (console.log(props),
+                    { meterId: props.rb.target.offsetParent.title, showInfo: true }
+                    // { meterId: props, showInfo: true }
+                )
+            ,
             onToggleClose: () => () =>
                 ({ showInfo: false }),
-            //({ meterId: props.tb.target.offsetParent.title})
+            //({ meterId: props.rb.target.offsetParent.title})
         }),
         withState('zoom', 'onZoomChange', 8),
         withState('center', 'onCenterChange'),
@@ -353,7 +357,7 @@ const Layout = (props) => {
                     >
                         {props.mark.map(loca =>
                             < Marker
-                                label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} ownKey={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={() => { props.onToggleOpen(loca.MeterID) }} onMouseOut={() => props.onToggleClose()}>
+                                label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} ownKey={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen} onMouseOut={props.onToggleClose}>
                                 {props.meterId == loca.MeterID && props.showInfo == true &&
                                     <InfoWindow
                                         defaultOptions={{ disableAutoPan: true }}
