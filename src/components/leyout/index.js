@@ -503,10 +503,9 @@ const Layout = (props) => {
     }
     const openMeterDetail = async (meter) => {
         await setPageLoading(true)
-        await clearInterval(meterDetailFlag)
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
-                console.log(res.data.created)
+                console.log(res)
                 if (res.data?.created) {
                     // let date1m = new Date(res.data.created)
                     // let dateCurrent = new Date()
@@ -526,7 +525,9 @@ const Layout = (props) => {
                 await setPageLoading(false)
             })
             .catch(err => {
-                setLoad(true)
+                console.log(err)
+                setPageLoading(false)
+
             })
         var myVar = setInterval(function () {
             axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
