@@ -60,6 +60,7 @@ const Layout = (props) => {
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
     const [zoom, setZoom] = useState()
+    const [defaultCenter, setDefaultCenter] = useState({ lat: 13.53139, lng: 100.92252 })
     const [tranfomerLocation, setTranformerLocation] = useState([])
     useEffect(() => {
         setTranformerLocation([13.53139, 100.92252])
@@ -306,7 +307,7 @@ const Layout = (props) => {
                 onToggleOpen: ({ isOpen }) => (props) => {
                     let loc = props.latLng.toJSON()
                     if (loc.lat !== tranfomerLocation[0] && loc.lng !== tranfomerLocation[1]) {
-                        setTranformerLocation([loc.lat, loc.lng])
+                        // setTranformerLocation([loc.lat, loc.lng])
 
                     }
                     return (
@@ -347,7 +348,8 @@ const Layout = (props) => {
         withGoogleMap)(props => {
             return (
                 <GoogleMap
-                    center={{ lat: tranfomerLocation[0], lng: tranfomerLocation[1] }}
+                    // center={{ lat: tranfomerLocation[0], lng: tranfomerLocation[1] }}
+                    center={defaultCenter}
                     zoom={zoom}
                     ref={props.onMapMounted}
                     onZoomChanged={props.onZoomChange}
