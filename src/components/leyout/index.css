@@ -23,7 +23,7 @@
   }
   .overlay{
     position: absolute;
-    top: 300px;
+    top: 500px;
     left: 20px;
     width: 150px;
     padding-left: 20px;
@@ -38,6 +38,24 @@
 
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {}
+@media only screen and (min-width: 1024px) {
+  .cardDisplay{
+    width: 300px
+  }
+  .overlay{
+    position: absolute;
+    top: 250px;
+    left: 20px;
+    width: 150px;
+    padding-left: 20px;
+    padding-top: 20;
+    height: 70px;
+    z-index: 10;
+    color: rgb(92, 92, 92);
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.8); /*dim the background*/
+  }
+}
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
@@ -64,7 +82,7 @@
   }
   .overlay{
     position: absolute;
-    top: 250px;
+    top: 150px;
     left: 20px;
     width: 150px;
     padding-left: 20px;
