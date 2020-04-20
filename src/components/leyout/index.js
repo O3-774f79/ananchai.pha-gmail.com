@@ -63,6 +63,13 @@ const Layout = (props) => {
     const [defaultCenter, setDefaultCenter] = useState({ lat: 13.53139, lng: 100.92252 })
     const [tranfomerLocation, setTranformerLocation] = useState([])
     useEffect(() => {
+        axios.get('http://52.163.210.101:44000/api/User/checkToken?token=' + localStorage.getItem("token"))
+            .then(res => console.log(res))
+            .catch(err => {
+                localStorage.clear("token")
+                props.history.push("/login")
+            }
+            )
         setTranformerLocation([13.53139, 100.92252])
         setZoom(11)
         axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
@@ -106,6 +113,7 @@ const Layout = (props) => {
         setStartDateSet(startDate.toISOString())
         setEndDateSet(endDate.toISOString())
     }, []);
+
     const VoltageOption = {
         title: {
             text: null
@@ -512,7 +520,7 @@ const Layout = (props) => {
                     // if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
                     //     meter["detail"] = null
                     // } else {
-                        meter["detail"] = res.data
+                    meter["detail"] = res.data
                     // }
                 } else {
                     meter["detail"] = res.data
