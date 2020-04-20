@@ -300,18 +300,29 @@ const Layout = (props) => {
     const GoogleMapExample = compose(
         withStateHandlers(() => ({
             meterId: '',
-            showInfo: false
-        }), {
-            onToggleOpen: ({ isOpen }) => (props) => {
-                return (
-                    { meterId: props.rb.target.offsetParent.title, showInfo: true }
-                )
-                // { meterId: props, showInfo: true }
-            },
-            onToggleClose: () => () =>
-                ({ showInfo: false }),
-            //({ meterId: props.rb.target.offsetParent.title})
+            isOpen: false,
         }),
+            {
+                onToggleOpen: ({ isOpen }) => (props) => {
+                    let loc = props.latLng.toJSON()
+                    if (loc.lat !== tranfomerLocation[0] && loc.lng !== tranfomerLocation[1]) {
+                        setTranformerLocation([loc.lat, loc.lng])
+
+                    }
+                    return (
+                        {
+                            meterId: props.rb.target.offsetParent.title,
+                            isOpen: !isOpen,
+                        }
+                    )
+                    // { meterId: props, showInfo: true }
+                },
+                onToggleClose: ({ isOpen }) => (props) => {
+                    return (
+                        { isOpen: !isOpen }
+                    )
+                }
+            }),
         withState('zoom', 'onZoomChange', 8),
         withHandlers(() => {
             const refs = {
@@ -328,8 +339,8 @@ const Layout = (props) => {
                 onCenterChange: ({ onCenterChange }) => () => {
                     let loc = refs.map.getCenter().toJSON()
                     // setTranformerLocation([loc.lat, loc.lng])
-                    console.log(loc.lat)
-                    console.log(loc.lng)
+                    // console.log(loc.lat)
+                    // console.log(loc.lng)
                 },
             }
         }),
@@ -356,7 +367,7 @@ const Layout = (props) => {
                         {props.mark.map(loca =>
                             < Marker
                                 label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} ownKey={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen} onMouseOut={props.onToggleClose}>
-                                {props.meterId == loca.MeterID && props.showInfo == true &&
+                                {props.meterId == loca.MeterID && props.isOpen &&
                                     <InfoWindow
                                         defaultOptions={{ disableAutoPan: true }}
                                     >
@@ -368,7 +379,8 @@ const Layout = (props) => {
                                             <p>Owner: {loca.Owner}</p>
                                             <p>Address: {loca.Address}</p>
                                         </div>
-                                    </InfoWindow>}
+                                    </InfoWindow>
+                                }
                             </Marker>)
                         }
                     </MarkerClusterer>
@@ -492,14 +504,15 @@ const Layout = (props) => {
         await clearInterval(meterDetailFlag)
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
+                console.log(res.data.created)
                 if (res.data?.created) {
-                    let date1m = new Date(res.data.created)
-                    let dateCurrent = new Date()
-                    if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
-                        meter["detail"] = null
-                    } else {
+                    // let date1m = new Date(res.data.created)
+                    // let dateCurrent = new Date()
+                    // if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
+                    //     meter["detail"] = null
+                    // } else {
                         meter["detail"] = res.data
-                    }
+                    // }
                 } else {
                     meter["detail"] = res.data
                 }
@@ -583,6 +596,7 @@ const Layout = (props) => {
     const onSubMenuClick = a => {
         setZoom(14)
         setTranformerLocation([a[0], a[1]])
+        setPage("home")
     }
     const onLocoClick = () => {
         setZoom(11)
@@ -768,6 +782,7 @@ const Layout = (props) => {
                                     </div>
                                 </div>
                             </div>
+                            {console.log(meterDetail)}
                             <div class="col-lg-4 col-md-6 ">
                                 <div class="card h-100">
                                     <div class="card-body text-left">
