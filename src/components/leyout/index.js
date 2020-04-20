@@ -302,23 +302,21 @@ const Layout = (props) => {
             meterId: '',
             showInfo: false
         }), {
-            onToggleOpen: ({ isOpen }) => (props) =>
-                (console.log(props),
+            onToggleOpen: ({ isOpen }) => (props) => {
+                return (
                     { meterId: props.rb.target.offsetParent.title, showInfo: true }
-                    // { meterId: props, showInfo: true }
                 )
-            ,
+                // { meterId: props, showInfo: true }
+            },
             onToggleClose: () => () =>
                 ({ showInfo: false }),
             //({ meterId: props.rb.target.offsetParent.title})
         }),
         withState('zoom', 'onZoomChange', 8),
-        withState('center', 'onCenterChange'),
         withHandlers(() => {
             const refs = {
                 map: undefined,
             }
-
             return {
                 onMapMounted: () => ref => {
                     refs.map = ref
@@ -328,10 +326,10 @@ const Layout = (props) => {
                     onZoomChange(refs.map.getZoom())
                 },
                 onCenterChange: ({ onCenterChange }) => () => {
-                    // setTranformerLocation([loc.Ya.i,loc.Ua.i])
-                    // console.log(refs.map.getBounds())
-                    // console.log(refs.map.getCenter())
-                    // onCenterChange(refs.map.getCenter())
+                    let loc = refs.map.getCenter().toJSON()
+                    // setTranformerLocation([loc.lat, loc.lng])
+                    console.log(loc.lat)
+                    console.log(loc.lng)
                 },
             }
         }),
