@@ -64,7 +64,7 @@
   }
   .overlay{
     position: absolute;
-    top: 150px;
+    top: 250px;
     left: 20px;
     width: 150px;
     padding-left: 20px;
@@ -78,11 +78,11 @@
 }
 @media only screen and (min-width: 1400px) {
   .cardDisplay{
-    width: 330px
+    width: 280px
   }
   .overlay{
     position: absolute;
-    top: 150px;
+    top: 250px;
     left: 20px;
     width: 150px;
     padding-left: 20px;
