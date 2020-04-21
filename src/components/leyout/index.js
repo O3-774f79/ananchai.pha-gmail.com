@@ -381,8 +381,10 @@ const Layout = (props) => {
                                     <InfoWindow
                                         defaultOptions={{ disableAutoPan: true }}
                                     >
+
                                         <div>
                                             <p>Meter : {loca.MeterName}</p>
+                                            <p>MeterID : {loca.MeterID}</p>
                                             <p>Meter Type : {loca.MeterType}</p>
                                             <p>Rate Type : {loca.RateType}</p>
                                             <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
