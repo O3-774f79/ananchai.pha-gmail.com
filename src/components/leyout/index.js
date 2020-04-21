@@ -606,13 +606,15 @@ const Layout = (props) => {
     }
     const onSubMenuClick = a => {
         setZoom(14)
-        setTranformerLocation([a[0], a[1]])
+        setDefaultCenter({ lat: a[0], lng: a[1] })
+        // setTranformerLocation([a[0], a[1]])
         setPage("home")
     }
     const onLocoClick = () => {
         setZoom(11)
         setPage("home")
-        setTranformerLocation([13.53139, 100.92252])
+        setDefaultCenter({ lat: 13.53139, lng: 100.92252 })
+        // setTranformerLocation([13.53139, 100.92252])
     }
     const renderSwitch = (page) => {
         switch (page) {
