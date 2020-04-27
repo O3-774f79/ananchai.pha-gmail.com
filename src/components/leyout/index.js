@@ -19,7 +19,7 @@ import {
 import 'antd/dist/antd.css';
 import './index.css'
 import "react-datepicker/dist/react-datepicker.css";
-import MapForGoogleMap from '../googlemap'
+import MapForGoogleMap from '../googlemap/index'
 const { SubMenu } = Menu;
 const { Column } = Table;
 
