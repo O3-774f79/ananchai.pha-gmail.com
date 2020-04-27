@@ -99,11 +99,13 @@ const Layout = (props) => {
                     { title: 'Reactive energy', label: 'Reactive energy', key: 'Sensors.KVARH', dataIndex: "KVARH", status: true },
                 ])
                 await setLoad(true);
-                setInterval(inquiryDataAvailability, 60000);
-                setInterval(() => InquirySensorAll(data), 60000)
-                setInterval(inquirySystemAvailability, 60000);
-                setInterval(inquiryallActivePower, 60000)
-                setInterval(inquiryallActiveEnergy, 60000)
+                await setInterval(() => InquirySensorAll(data), 10000)
+                await inquiryDataAvailability()
+                
+                // setInterval(inquiryDataAvailability, 60000);
+                // setInterval(inquirySystemAvailability, 60000);
+                // setInterval(inquiryallActivePower, 60000)
+                // setInterval(inquiryallActiveEnergy, 60000)
             })
             .catch(err => {
                 setError(err.message);
@@ -480,34 +482,62 @@ const Layout = (props) => {
     }
     const inquiryDataAvailability = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
-            .then(async res => {
+            .then(res => {
                 setDataAvailability(res.data.value)
             })
             .catch(err => {
-                // setError(err.message);
                 setLoad(true)
             })
+        var myVar = setInterval(function () {
+            axios.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
+                .then(res => {
+                    setDataAvailability(res.data.value)
+                })
+                .catch(err => {
+                    setLoad(true)
+                })
+        }, 60000)
     }
 
     const inquirySystemAvailability = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
-            .then(async res => {
+            .then(res => {
                 setSystemAvailability(res.data.value)
             })
             .catch(err => {
                 // setError(err.message);
                 setLoad(true)
             })
+        var myVar = setInterval(function () {
+            axios.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
+                .then(res => {
+                    setSystemAvailability(res.data.value)
+                })
+                .catch(err => {
+                    // setError(err.message);
+                    setLoad(true)
+                })
+        }, 60000)
     }
     const inquiryallActivePower = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/allActivePower')
-            .then(async res => {
+            .then(res => {
                 setActivePower(res.data.value)
             })
             .catch(err => {
                 // setError(err.message);
                 setLoad(true)
             })
+        var myVar = setInterval(function () {
+            axios.get('http://52.163.210.101:44000/dataAVA/allActivePower')
+                .then(res => {
+                    setActivePower(res.data.value)
+                })
+                .catch(err => {
+                    // setError(err.message);
+                    setLoad(true)
+                })
+        }, 60000)
     }
     const inquiryallActiveEnergy = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
@@ -518,6 +548,16 @@ const Layout = (props) => {
                 // setError(err.message);
                 setLoad(true)
             })
+        var myVar = setInterval(function () {
+            axios.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
+                .then(async res => {
+                    setAllActiveEnergy(res.data.value)
+                })
+                .catch(err => {
+                    // setError(err.message);
+                    setLoad(true)
+                })
+        }, 60000)
     }
     const openMeterDetail = async (meter) => {
         await setPageLoading(true)
