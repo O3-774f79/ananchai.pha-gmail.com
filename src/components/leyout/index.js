@@ -9,8 +9,7 @@ import meterOn from '../../img/Meter.svg'
 import axios from 'axios'
 import HighchartsReact from 'highcharts-react-official'
 import Highcharts, { wrap } from 'highcharts'
-import { Menu, Checkbox, Table, Row, Col, Spin } from 'antd';
-import { withGoogleMap, GoogleMap, Marker, InfoWindow, } from 'react-google-maps';
+import { Menu, Checkbox, Table, Spin } from 'antd';
 import { CSVLink } from "react-csv";
 import GaugeChart from 'react-gauge-chart'
 import DatePicker from 'react-datepicker'
@@ -20,13 +19,13 @@ import {
 import 'antd/dist/antd.css';
 import './index.css'
 import "react-datepicker/dist/react-datepicker.css";
-const { compose, withProps, withState, withHandlers, withStateHandlers } = require("recompose");
-const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
+import MapForGoogleMap from '../googlemap'
 const { SubMenu } = Menu;
 const { Column } = Table;
 
 
 const Layout = (props) => {
+    const [loadingMeter, setLoadingMeter] = useState(true)
     const [pageLoading, setPageLoading] = useState(false)
     const [meterDetailFlag, setMeterDetailFlag] = useState("")
     const [hamberger, setHamberger] = useState(true);
@@ -83,6 +82,7 @@ const Layout = (props) => {
                 ))
                 await setTranformer(res.data)
                 await setMeters(data)
+                await setLoadingMeter(false)
                 await setHeaderTable([
                     { title: 'TransformerID', label: 'Transformer ID', key: 'TranfomerID', dataIndex: "TranfomerID", status: true },
                     { title: 'MeterID', label: 'Meter ID', key: 'MeterID', dataIndex: "MeterID", status: true },
@@ -99,13 +99,17 @@ const Layout = (props) => {
                     { title: 'Reactive energy', label: 'Reactive energy', key: 'Sensors.KVARH', dataIndex: "KVARH", status: true },
                 ])
                 await setLoad(true);
-                await setInterval(() => InquirySensorAll(data), 10000)
-                await inquiryDataAvailability()
-                
-                // setInterval(inquiryDataAvailability, 60000);
-                // setInterval(inquirySystemAvailability, 60000);
-                // setInterval(inquiryallActivePower, 60000)
-                // setInterval(inquiryallActiveEnergy, 60000)
+                InquirySensorAll(data)
+                inquiryDataAvailability()
+                inquirySystemAvailability()
+                inquiryallActivePower()
+                inquiryallActiveEnergy()
+
+                setInterval(() => InquirySensorAll(data), 60000)
+                setInterval(() => inquiryDataAvailability(), 60000);
+                setInterval(() => inquirySystemAvailability(), 60000);
+                setInterval(() => inquiryallActivePower(), 60000)
+                setInterval(() => inquiryallActiveEnergy(), 60000)
             })
             .catch(err => {
                 setError(err.message);
@@ -212,8 +216,6 @@ const Layout = (props) => {
                 marker: {
                     enabled: false
                 },
-                // pointInterval: 3600000, // one hour
-                // pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)
             }
         },
         series: [
@@ -290,8 +292,6 @@ const Layout = (props) => {
                 marker: {
                     enabled: false
                 },
-                // pointInterval: 3600000, // one hour
-                // pointStart: Date.UTC(2018, 1, 13, 0, 0, 0)
             }
         },
         series: [
@@ -315,101 +315,6 @@ const Layout = (props) => {
             enabled: false
         }, responsive: true
     }
-    const GoogleMapExample = compose(
-        withStateHandlers(() => ({
-            meterId: '',
-            isOpen: false,
-        }),
-            {
-                onToggleOpen: ({ isOpen }) => (props) => {
-                    let loc = props.latLng.toJSON()
-                    if (loc.lat !== tranfomerLocation[0] && loc.lng !== tranfomerLocation[1]) {
-                        // setTranformerLocation([loc.lat, loc.lng])
-                        console.log(props)
-                    }
-                    return (
-                        {
-                            //props.rb.target.offsetParent.title
-                            meterId: props.rb ? props.rb.target.offsetParent.title : props.tb.target.offsetParent.title,
-                            isOpen: !isOpen,
-                        }
-                    )
-                    // { meterId: props, showInfo: true }
-                },
-                onToggleClose: ({ isOpen }) => (props) => {
-                    return (
-                        { isOpen: !isOpen }
-                    )
-                }
-            }),
-        withState('zoom', 'onZoomChange', 8),
-        withHandlers(() => {
-            const refs = {
-                map: undefined,
-            }
-            return {
-                onMapMounted: () => ref => {
-                    refs.map = ref
-                },
-                onZoomChange: ({ onZoomChange }) => () => {
-                    // setZoom(refs.map.getZoom())
-                    onZoomChange(refs.map.getZoom())
-                },
-                onCenterChange: ({ onCenterChange }) => () => {
-                    let loc = refs.map.getCenter().toJSON()
-                    // setTranformerLocation([loc.lat, loc.lng])
-                    // console.log(loc.lat)
-                    // console.log(loc.lng)
-                },
-            }
-        }),
-        withGoogleMap)(props => {
-            return (
-                <GoogleMap
-                    // center={{ lat: tranfomerLocation[0], lng: tranfomerLocation[1] }}
-                    center={defaultCenter}
-                    zoom={zoom}
-                    ref={props.onMapMounted}
-                    onZoomChanged={props.onZoomChange}
-                    onCenterChanged={props.onCenterChange}
-                    defaultOptions={{
-                        scrollwheel: true,
-                        mapTypeControl: false,
-                        streetViewControl: false
-                    }}
-                >
-                    <MarkerClusterer
-                        averageCenter
-                        enableRetinaIcons
-                        gridSize={30}
-                        maxZoom={14}
-                    >
-                        {props.mark.map(loca =>
-                            < Marker
-                                label={{ color: 'white', fontSize: '5px', fontWeight: 'bold', text: loca.MeterName }} key={loca.MeterID} title={loca.MeterID} ownKey={loca.MeterID} options={{ icon: loca.status, scaledSize: { width: 20, height: 20 } }} position={{ lat: loca.Location[0], lng: loca.Location[1] }} onClick={() => openMeterDetail(loca)} onMouseOver={props.onToggleOpen} onMouseOut={props.onToggleClose}>
-                                {props.meterId == loca.MeterID && props.isOpen &&
-                                    <InfoWindow
-                                        defaultOptions={{ disableAutoPan: true }}
-                                    >
-
-                                        <div>
-                                            <p>Meter : {loca.MeterName}</p>
-                                            <p>MeterID : {loca.MeterID}</p>
-                                            <p>Meter Type : {loca.MeterType}</p>
-                                            <p>Rate Type : {loca.RateType}</p>
-                                            <p>Location : {loca.Location[0]},{loca.Location[1]}</p>
-                                            <p>Owner: {loca.Owner}</p>
-                                            <p>Address: {loca.Address}</p>
-                                        </div>
-                                    </InfoWindow>
-                                }
-                            </Marker>)
-                        }
-                    </MarkerClusterer>
-                </GoogleMap >
-            )
-
-        });
     const onCheckTableHeader = async (data) => {
         await headerTable.forEach((v1, i1) => data.includes(v1.title) ? headerTable[i1].status = true : headerTable[i1].status = false)
         await setHeaderTable([])
@@ -435,10 +340,8 @@ const Layout = (props) => {
                 let datav1 = []
                 let datav2 = []
                 let datav3 = []
-
                 let datavKW_LP = []
                 let datavKVAR_LP = []
-
                 let datavKWH_LP = []
                 let datavKVARH_LP = []
 
@@ -488,15 +391,6 @@ const Layout = (props) => {
             .catch(err => {
                 setLoad(true)
             })
-        var myVar = setInterval(function () {
-            axios.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
-                .then(res => {
-                    setDataAvailability(res.data.value)
-                })
-                .catch(err => {
-                    setLoad(true)
-                })
-        }, 60000)
     }
 
     const inquirySystemAvailability = () => {
@@ -505,19 +399,8 @@ const Layout = (props) => {
                 setSystemAvailability(res.data.value)
             })
             .catch(err => {
-                // setError(err.message);
                 setLoad(true)
             })
-        var myVar = setInterval(function () {
-            axios.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
-                .then(res => {
-                    setSystemAvailability(res.data.value)
-                })
-                .catch(err => {
-                    // setError(err.message);
-                    setLoad(true)
-                })
-        }, 60000)
     }
     const inquiryallActivePower = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/allActivePower')
@@ -525,19 +408,8 @@ const Layout = (props) => {
                 setActivePower(res.data.value)
             })
             .catch(err => {
-                // setError(err.message);
                 setLoad(true)
             })
-        var myVar = setInterval(function () {
-            axios.get('http://52.163.210.101:44000/dataAVA/allActivePower')
-                .then(res => {
-                    setActivePower(res.data.value)
-                })
-                .catch(err => {
-                    // setError(err.message);
-                    setLoad(true)
-                })
-        }, 60000)
     }
     const inquiryallActiveEnergy = () => {
         axios.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
@@ -545,19 +417,8 @@ const Layout = (props) => {
                 setAllActiveEnergy(res.data.value)
             })
             .catch(err => {
-                // setError(err.message);
                 setLoad(true)
             })
-        var myVar = setInterval(function () {
-            axios.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
-                .then(async res => {
-                    setAllActiveEnergy(res.data.value)
-                })
-                .catch(err => {
-                    // setError(err.message);
-                    setLoad(true)
-                })
-        }, 60000)
     }
     const openMeterDetail = async (meter) => {
         await setPageLoading(true)
@@ -725,10 +586,13 @@ const Layout = (props) => {
                                         <div class="dotRed"></div> Disconnected
                                     </div>
                                 </div>
-                                <GoogleMapExample
-                                    containerElement={<div style={{ height: `500px`, width: '100%', padding: " 5px 5px 5px 10px " }} />}
-                                    mapElement={<div style={{ height: `100%` }} />}
+                                <MapForGoogleMap
+                                    containerElement={<div style={{ height: '500px', width: '100%', padding: " 5px 5px 5px 10px " }} />}
+                                    mapElement={<div style={{ height: '100 %' }} />}
                                     mark={meters}
+                                    defaultCenter={defaultCenter}
+                                    zoom={zoom}
+                                    openMeterDetail={openMeterDetail}
                                     isMarkerShown
                                 />
                             </div>
