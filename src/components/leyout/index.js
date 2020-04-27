@@ -316,11 +316,12 @@ const Layout = (props) => {
                     let loc = props.latLng.toJSON()
                     if (loc.lat !== tranfomerLocation[0] && loc.lng !== tranfomerLocation[1]) {
                         // setTranformerLocation([loc.lat, loc.lng])
-
+                        console.log(props)
                     }
                     return (
                         {
-                            meterId: props.rb.target.offsetParent.title,
+                            //props.rb.target.offsetParent.title
+                            meterId: props.rb ? props.rb.target.offsetParent.title : props.tb.target.offsetParent.title,
                             isOpen: !isOpen,
                         }
                     )
