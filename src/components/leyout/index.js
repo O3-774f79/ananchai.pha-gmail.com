@@ -63,11 +63,14 @@ const Layout = (props) => {
     const [defaultCenter, setDefaultCenter] = useState({ lat: 13.53139, lng: 100.92252 })
     const [tranfomerLocation, setTranformerLocation] = useState([])
     useEffect(() => {
-        axios.get('http://52.163.210.101:44000/api/User/checkToken?token=' + localStorage.getItem("token"))
+        axios.get('http://localhost:44000/api/User/checkToken?token=' + localStorage.getItem("token"), {withCredentials: true} //correct
+        )
+            // axios.get('http://52.163.210.101:44000/api/User/checkToken?token=' + localStorage.getItem("token"))
             .then(res => console.log(res))
             .catch(err => {
-                localStorage.clear("token")
-                props.history.push("/login")
+                console.log(err)
+                // localStorage.clear("token")
+                // props.history.push("/login")
             }
             )
         setTranformerLocation([13.53139, 100.92252])
@@ -112,7 +115,15 @@ const Layout = (props) => {
         setStartDateSet(startDate.toISOString())
         setEndDateSet(endDate.toISOString())
     }, []);
-
+    window.addEventListener("beforeunload", (ev) => 
+    {  
+        ev.preventDefault();
+        localStorage.clear("token")
+        localStorage.clear("firstName")
+        localStorage.clear("lastName")
+        localStorage.clear("role")        
+        // return ev.returnValue = 'Are you sure you want to close?';
+    });
     const VoltageOption = {
         title: {
             text: null
