@@ -59,7 +59,7 @@ const Layout = (props) => {
     const [ReactiveEnergy, setReactiveEnergy] = useState([])
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
-    const [zoom, setZoom] = useState()
+    const [zoom, setZoom] = useState(11)
     const [defaultCenter, setDefaultCenter] = useState({ lat: 13.53139, lng: 100.92252 })
     const [tranfomerLocation, setTranformerLocation] = useState([])
     useEffect(() => {
@@ -71,7 +71,6 @@ const Layout = (props) => {
             }
             )
         setTranformerLocation([13.53139, 100.92252])
-        setZoom(11)
         axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
             .then(async res => {
                 let data = []
@@ -343,7 +342,7 @@ const Layout = (props) => {
                     refs.map = ref
                 },
                 onZoomChange: ({ onZoomChange }) => () => {
-                    setZoom(refs.map.getZoom())
+                    // setZoom(refs.map.getZoom())
                     onZoomChange(refs.map.getZoom())
                 },
                 onCenterChange: ({ onCenterChange }) => () => {
