@@ -42,6 +42,7 @@ const Layout = (props) => {
     const [tableHeader, setTableHeader] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
     const [tableHeaderSet, setTableHeaderSet] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
     const [dataExport, setDataExport] = useState([])
+    const [pageLoadingMain, setpageLoadingMain] = useState(false)
     const [dataAvailability, setDataAvailability] = useState(0)
     const [systemAvailability, setSystemAvailability] = useState(0)
     const [startDateSet, setStartDateSet] = useState("")
@@ -62,18 +63,21 @@ const Layout = (props) => {
     const [defaultCenter, setDefaultCenter] = useState({ lat: 13.53139, lng: 100.92252 })
     const [tranfomerLocation, setTranformerLocation] = useState([])
     useEffect(() => {
+        setpageLoadingMain(true)
         // axios.get('http://localhost:44000/api/User/checkToken?token=' + localStorage.getItem("token"), {withCredentials: true} //correct
         // )
         axios.get('http://52.163.210.101:44000/api/User/checkToken?token=' + localStorage.getItem("token"))
-            .then(res => console.log(res))
+            .then(res => setpageLoadingMain(false))
             .catch(err => {
                 localStorage.clear("token")
                 props.history.push("/login")
             }
             )
         setTranformerLocation([13.53139, 100.92252])
+        console.time("InquiryTranformer")
         axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
             .then(async res => {
+                console.timeEnd("InquiryTranformer")
                 let data = []
                 await res.data.map(item => item.MeterInfo.map(meter => {
                     meter["status"] = meterOff
@@ -888,101 +892,103 @@ const Layout = (props) => {
         }
     }
     return (
-        <div style={{ display: 'flex', height: "100% auto" }}>
-            <div style={{
-                width: hamberger ? 300 : 0, zIndex: 999999
-            }}>
-                {!hamberger
-                    ? <a id="show-sidebar" class="btn btn-sm btn-primary pt-2" onClick={() => setHamberger(!hamberger)}>
-                        <i class="material-icons">menu</i>
-                    </a>
-                    :
-                    <div style={{ height: "100%", overflow: "scroll" }}>
-                        <span style={{ display: "flex" }}>
-                            <div class="sidebar-header" style={{ padding: "20px", cursor: "pointer" }} onClick={() => onLocoClick()}>
-                                <img src={logoPEA} class="mx-auto d-flex" />
-                            </div>
-                            <div style={{ textAlign: "right", cursor: 'pointer', padding: "10px 20px", display: 'block' }}>
-                                <a id="show-sidebar" onClick={() => setHamberger(!hamberger)}>
-                                    <i class="material-icons text-primary">clear</i>
-                                </a>
-                            </div>
+        <Spin spinning={pageLoadingMain}>
+            <div style={{ display: 'flex', height: "100% auto" }}>
+                <div style={{
+                    width: hamberger ? 300 : 0, zIndex: 999999
+                }}>
+                    {!hamberger
+                        ? <a id="show-sidebar" class="btn btn-sm btn-primary pt-2" onClick={() => setHamberger(!hamberger)}>
+                            <i class="material-icons">menu</i>
+                        </a>
+                        :
+                        <div style={{ height: "100%", overflow: "scroll" }}>
+                            <span style={{ display: "flex" }}>
+                                <div class="sidebar-header" style={{ padding: "20px", cursor: "pointer" }} onClick={() => onLocoClick()}>
+                                    <img src={logoPEA} class="mx-auto d-flex" />
+                                </div>
+                                <div style={{ textAlign: "right", cursor: 'pointer', padding: "10px 20px", display: 'block' }}>
+                                    <a id="show-sidebar" onClick={() => setHamberger(!hamberger)}>
+                                        <i class="material-icons text-primary">clear</i>
+                                    </a>
+                                </div>
 
-                        </span>
-                        <div class="sidebar-menu">
-                            <h6 class="ml-4"> ยินดีต้อนรับ </h6>
-                            <Menu
-                                style={{ width: "100%" }}
-                                mode="inline"
-                            >
-                                <SubMenu
-                                    style={{ width: "230px" }}
-                                    key="sub1"
-                                    title={
-                                        <span>
-                                            <span>{localStorage.getItem("firstName")} {localStorage.getItem("lastName")}</span>
-                                        </span>
-                                    }
-                                >
-                                    <Menu.Item style={{ width: "230px" }} key="1" onClick={() => handleClickLogout()}>  <Link to="/login">Logout</Link></Menu.Item>
-                                </SubMenu>
-                            </Menu>
-                        </div>
-                        <hr />
-
-                        <div class="sidebar-menu">
-                            <span>
                             </span>
-                            <Menu
-                                style={{ width: "100%" }}
-                                mode="inline"
-                            >
-                                {tranformers.map(item => {
-                                    return (
-                                        <SubMenu
-                                            key={item.TranformerID}
-                                            style={{ width: "230px" }}
-                                            onTitleClick={() => onSubMenuClick(item.Location)}
-                                            title={
-                                                <span>
-                                                    <img src={transformerLogo} height="18" width="auto" style={{ marginRight: 5 }} />
-                                                    <span>ID : {item.TranformerID}</span>
-                                                </span>
-                                            }
-                                        >
-                                            {item.MeterInfo.map(item => {
-                                                return (
-                                                    <Menu.Item style={{ width: "230px" }} key={item.MeterID}><li onClick={() => openMeterDetail(item)}>
-                                                        <span>MeterID: {item.MeterID}
-                                                        </span>
-                                                    </li></Menu.Item>
-                                                )
-                                            })}
-                                        </SubMenu>
-                                    )
-                                })}
-                                {localStorage.getItem("role") == "admin" ? < Menu.Item style={{ width: "230px" }} key="report" onClick={() => setPage("report")}>
-                                    <span>
-                                        <img src={reportLogo} height="18" width="auto" class="ml-1" style={{ marginRight: 5 }} />
-                                        <a> Report</a>
-                                    </span>
-                                </Menu.Item> : null}
+                            <div class="sidebar-menu">
+                                <h6 class="ml-4"> ยินดีต้อนรับ </h6>
+                                <Menu
+                                    style={{ width: "100%" }}
+                                    mode="inline"
+                                >
+                                    <SubMenu
+                                        style={{ width: "230px" }}
+                                        key="sub1"
+                                        title={
+                                            <span>
+                                                <span>{localStorage.getItem("firstName")} {localStorage.getItem("lastName")}</span>
+                                            </span>
+                                        }
+                                    >
+                                        <Menu.Item style={{ width: "230px" }} key="1" onClick={() => handleClickLogout()}>  <Link to="/login">Logout</Link></Menu.Item>
+                                    </SubMenu>
+                                </Menu>
+                            </div>
+                            <hr />
 
-                            </Menu>
-                        </div></div>
-                }
-            </div>
-            <div class="container-fluid">
-                <div class="bg-banner bg-white p-0 " style={{ height: 200 }} >
-                    <img src={bannerLogo} class="img-fluid float-right" style={{ height: 50 }} />
-                    <br />
-                    <div class="clearfix"></div>
-                    <img src={objLogo} class="img-fluid mx-auto d-flex" alt="Responsive image" style={{ height: 150 }} />
+                            <div class="sidebar-menu">
+                                <span>
+                                </span>
+                                <Menu
+                                    style={{ width: "100%" }}
+                                    mode="inline"
+                                >
+                                    {tranformers.map(item => {
+                                        return (
+                                            <SubMenu
+                                                key={item.TranformerID}
+                                                style={{ width: "230px" }}
+                                                onTitleClick={() => onSubMenuClick(item.Location)}
+                                                title={
+                                                    <span>
+                                                        <img src={transformerLogo} height="18" width="auto" style={{ marginRight: 5 }} />
+                                                        <span>ID : {item.TranformerID}</span>
+                                                    </span>
+                                                }
+                                            >
+                                                {item.MeterInfo.map(item => {
+                                                    return (
+                                                        <Menu.Item style={{ width: "230px" }} key={item.MeterID}><li onClick={() => openMeterDetail(item)}>
+                                                            <span>MeterID: {item.MeterID}
+                                                            </span>
+                                                        </li></Menu.Item>
+                                                    )
+                                                })}
+                                            </SubMenu>
+                                        )
+                                    })}
+                                    {localStorage.getItem("role") == "admin" ? < Menu.Item style={{ width: "230px" }} key="report" onClick={() => setPage("report")}>
+                                        <span>
+                                            <img src={reportLogo} height="18" width="auto" class="ml-1" style={{ marginRight: 5 }} />
+                                            <a> Report</a>
+                                        </span>
+                                    </Menu.Item> : null}
+
+                                </Menu>
+                            </div></div>
+                    }
                 </div>
-                <div class="w-100 mt-4 "></div>
-                {renderSwitch(page)}
-            </div>
-        </div >
+                <div class="container-fluid">
+                    <div class="bg-banner bg-white p-0 " style={{ height: 200 }} >
+                        <img src={bannerLogo} class="img-fluid float-right" style={{ height: 50 }} />
+                        <br />
+                        <div class="clearfix"></div>
+                        <img src={objLogo} class="img-fluid mx-auto d-flex" alt="Responsive image" style={{ height: 150 }} />
+                    </div>
+                    <div class="w-100 mt-4 "></div>
+                    {renderSwitch(page)}
+                </div>
+            </div >
+        </Spin>
     )
 }
 export default Layout;
