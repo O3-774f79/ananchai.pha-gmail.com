@@ -15,8 +15,8 @@ const Login = props => {
     const handleSubmit = (event) => {
         setLoading(true)
         event.preventDefault();
-        axios.post('http://localhost:44000/api/User/authenticate',
-            // axios.post('http://52.163.210.101:44000/api/User/authenticate',;
+        // axios.post('http://localhost:44000/api/User/authenticate',
+        axios.post('http://52.163.210.101:44000/api/User/authenticate',
             { "email": username, "password": password }
         ).then(resp => {
             localStorage.setItem("token", resp.data.token)
