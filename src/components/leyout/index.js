@@ -513,17 +513,18 @@ const Layout = (props) => {
     }
     const openMeterDetail = async (meter) => {
         await setPageLoading(true)
+        await clearInterval(meterDetailFlag)
         axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
-                console.log(res)
                 if (res.data?.created) {
-                    // let date1m = new Date(res.data.created)
-                    // let dateCurrent = new Date()
-                    // if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
-                    //     meter["detail"] = null
-                    // } else {
-                    meter["detail"] = res.data
-                    // }
+                    let date1m = new Date(res.data.created).getTime()
+                    let dateCurrent = new Date().getTime()
+                    let dateDef = Math.floor((((dateCurrent - date1m) / 1000) / 60) / 60) / 24
+                    if (dateDef > 1) {
+                        meter["detail"] = null
+                    } else {
+                        meter["detail"] = res.data
+                    }
                 } else {
                     meter["detail"] = res.data
                 }
@@ -545,7 +546,8 @@ const Layout = (props) => {
                     if (res.data?.created) {
                         let date1m = new Date(res.data.created)
                         let dateCurrent = new Date()
-                        if (Math.round(((dateCurrent - date1m) / 1000) / 60) > 1) {
+                        let dateDef = Math.floor((((dateCurrent - date1m) / 1000) / 60) / 60) / 24
+                        if (dateDef > 1) {
                             meter["detail"] = null
                         } else {
                             meter["detail"] = res.data
