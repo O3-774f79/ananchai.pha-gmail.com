@@ -586,9 +586,10 @@ const Layout = (props) => {
                                         <div class="dotRed"></div> Disconnected
                                     </div>
                                 </div>
+                                <br />
                                 <MapForGoogleMap
                                     containerElement={<div style={{ height: '500px', width: '100%', padding: " 5px 5px 5px 10px " }} />}
-                                    mapElement={<div style={{ height: '100 %' }} />}
+                                    mapElement={<div style={{ height: '100%' }} />}
                                     mark={meters}
                                     defaultCenter={defaultCenter}
                                     zoom={zoom}
