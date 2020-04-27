@@ -1,5 +1,4 @@
 import React from 'react'
-const fetch = require("isomorphic-fetch");
 const { compose, withState, withProps, withHandlers, withStateHandlers } = require("recompose");
 const {
     withScriptjs,
