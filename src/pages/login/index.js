@@ -23,6 +23,7 @@ const Login = props => {
             localStorage.setItem("firstName", resp.data.firstName)
             localStorage.setItem("lastName", resp.data.lastName)
             localStorage.setItem("role", resp.data.role)
+            sessionStorage.setItem('token', resp.data.token);
             setLogin(true)
             setLoading(false)
         }).catch(async err => {

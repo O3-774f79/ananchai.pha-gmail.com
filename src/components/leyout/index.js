@@ -66,9 +66,10 @@ const Layout = (props) => {
         setpageLoadingMain(true)
         // axios.get('http://localhost:44000/api/User/checkToken?token=' + localStorage.getItem("token"), {withCredentials: true} //correct
         // )
-        axios.get('http://52.163.210.101:44000/api/User/checkToken?token=' + localStorage.getItem("token"))
+        axios.get('http://52.163.210.101:44000/api/User/checkToken?token=' + sessionStorage.getItem('token'))//localStorage.getItem("token"))
             .then(res => setpageLoadingMain(false))
             .catch(err => {
+                sessionStorage.removeItem('token');
                 localStorage.clear("token")
                 props.history.push("/login")
             }
