@@ -376,6 +376,7 @@ const Layout = (props) => {
         localStorage.clear("firstName")
         localStorage.clear("lastName")
         localStorage.clear("role")
+        sessionStorage.removeItem('token');
 
     }
     const onSelectTranformerIDReportChange = (e) => {
