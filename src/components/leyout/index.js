@@ -6,7 +6,6 @@ import transformerLogo from '../../img/i-transformer.svg'
 import reportLogo from '../../img/i-export.svg'
 import meterOff from '../../img/Meter-off.svg'
 import meterOn from '../../img/Meter.svg'
-import axios from 'axios'
 import HighchartsReact from 'highcharts-react-official'
 import Highcharts, { wrap } from 'highcharts'
 import { Menu, Checkbox, Table, Spin } from 'antd';
@@ -19,6 +18,7 @@ import {
 import 'antd/dist/antd.css';
 import './index.css'
 import "react-datepicker/dist/react-datepicker.css";
+import API from '../../helper';
 import MapForGoogleMap from '../googleMap'
 const { SubMenu } = Menu;
 const { Column } = Table;
@@ -64,9 +64,9 @@ const Layout = (props) => {
     const [tranfomerLocation, setTranformerLocation] = useState([])
     useEffect(() => {
         setpageLoadingMain(true)
-        // axios.get('http://localhost:44000/api/User/checkToken?token=' + localStorage.getItem("token"), {withCredentials: true} //correct
+        // API.get('http://localhost:44000/api/User/checkToken?token=' + localStorage.getItem("token"), {withCredentials: true} //correct
         // )
-        axios.get('http://52.163.210.101:44000/api/User/checkToken?token=' + sessionStorage.getItem('token'))//localStorage.getItem("token"))
+        API.post('http://52.163.210.101:44000/api/User/checkToken', { token: sessionStorage.getItem('token') })
             .then(res => setpageLoadingMain(false))
             .catch(err => {
                 sessionStorage.removeItem('token');
@@ -76,7 +76,7 @@ const Layout = (props) => {
             )
         setTranformerLocation([13.53139, 100.92252])
         console.time("InquiryTranformer")
-        axios.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
+        API.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
             .then(async res => {
                 console.timeEnd("InquiryTranformer")
                 let data = []
@@ -326,7 +326,7 @@ const Layout = (props) => {
         await setHeaderTable(headerTable)
     }
     const InquirySensorAll = (data) => {
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/checkOnline')
+        API.get('http://52.163.210.101:44000/apiRoute/Things/checkOnline')
             .then(async res => {
                 await data.map(meter =>
                     res.data.map(rec => {
@@ -339,7 +339,7 @@ const Layout = (props) => {
             })
     }
     const InquiryGraph = (data) => {
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/InquiryGrahp?IMEI=' + data)
+        API.get('http://52.163.210.101:44000/apiRoute/Things/InquiryGrahp?IMEI=' + data)
             .then(async res => {
                 res.data.created = res.data.created.map(d => new Date(d).getTime())
                 let datav1 = []
@@ -390,7 +390,7 @@ const Layout = (props) => {
         }
     }
     const inquiryDataAvailability = () => {
-        axios.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
+        API.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
             .then(res => {
                 setDataAvailability(res.data.value)
             })
@@ -400,7 +400,7 @@ const Layout = (props) => {
     }
 
     const inquirySystemAvailability = () => {
-        axios.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
+        API.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
             .then(res => {
                 setSystemAvailability(res.data.value)
             })
@@ -409,7 +409,7 @@ const Layout = (props) => {
             })
     }
     const inquiryallActivePower = () => {
-        axios.get('http://52.163.210.101:44000/dataAVA/allActivePower')
+        API.get('http://52.163.210.101:44000/dataAVA/allActivePower')
             .then(res => {
                 setActivePower(res.data.value)
             })
@@ -418,7 +418,7 @@ const Layout = (props) => {
             })
     }
     const inquiryallActiveEnergy = () => {
-        axios.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
+        API.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
             .then(async res => {
                 setAllActiveEnergy(res.data.value)
             })
@@ -429,7 +429,7 @@ const Layout = (props) => {
     const openMeterDetail = async (meter) => {
         await setPageLoading(true)
         await clearInterval(meterDetailFlag)
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
+        API.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
             .then(async res => {
                 if (res.data?.created) {
                     let date1m = new Date(res.data.created).getTime()
@@ -456,7 +456,7 @@ const Layout = (props) => {
 
             })
         var myVar = setInterval(function () {
-            axios.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
+            API.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
                 .then(async res => {
                     if (res.data?.created) {
                         let date1m = new Date(res.data.created)
@@ -480,7 +480,7 @@ const Layout = (props) => {
     }
     const searchHistiry = () => {
         setLoadingTable(true)
-        axios.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString() + "&&" + "endDate=" + new Date(endDate).toISOString())
+        API.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString() + "&&" + "endDate=" + new Date(endDate).toISOString())
             .then(async res => {
                 res.data.history.map(item => {
                     return (
