@@ -30,7 +30,6 @@ const Login = props => {
             await setPassword("")
             await error()
             await setLoading(false)
-            // alert("กรุณาตรวจสอบ username และ password ")
         })
     }
     if (login == true) {

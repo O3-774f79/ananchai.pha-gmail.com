@@ -4,9 +4,9 @@ import {
     Route,
     Redirect,
 } from 'react-router-dom'
-import axios from 'axios'
+import API from '../../helper';
 const PrivateRoute = ({ component: Component, ...rest }) => {
-    axios.get('http://52.163.210.101:44000/api/User/checkToken?token=' + localStorage.getItem("token"))
+    API.post('api/User/checkToken?token=' + localStorage.getItem("token"))
         .then(res => console.log(res))
         .catch(err => localStorage.clear("token"))
     return (
