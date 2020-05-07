@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom'
 import API from '../../helper';
 const PrivateRoute = ({ component: Component, ...rest }) => {
-    API.post('api/User/checkToken?token=' + localStorage.getItem("token"))
+    API.post('api/User/checkToken', { token: localStorage.getItem('token') })
         .then(res => console.log(res))
         .catch(err => localStorage.clear("token"))
     return (
