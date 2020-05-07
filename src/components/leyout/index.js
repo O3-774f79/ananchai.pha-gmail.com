@@ -64,9 +64,7 @@ const Layout = (props) => {
     const [tranfomerLocation, setTranformerLocation] = useState([])
     useEffect(() => {
         setpageLoadingMain(true)
-        // API.get('http://localhost:44000/api/User/checkToken?token=' + localStorage.getItem("token"), {withCredentials: true} //correct
-        // )
-        API.post('http://52.163.210.101:44000/api/User/checkToken', { token: sessionStorage.getItem('token') })
+        API.post('api/User/checkToken', { token: sessionStorage.getItem('token') })
             .then(res => setpageLoadingMain(false))
             .catch(err => {
                 sessionStorage.removeItem('token');
@@ -75,10 +73,8 @@ const Layout = (props) => {
             }
             )
         setTranformerLocation([13.53139, 100.92252])
-        console.time("InquiryTranformer")
-        API.get('http://52.163.210.101:44000/apiRoute/tranformers/InquiryTranformer')
+        API.get('apiRoute/tranformers/InquiryTranformer', { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(async res => {
-                console.timeEnd("InquiryTranformer")
                 let data = []
                 await res.data.map(item => item.MeterInfo.map(meter => {
                     meter["status"] = meterOff
@@ -326,7 +322,7 @@ const Layout = (props) => {
         await setHeaderTable(headerTable)
     }
     const InquirySensorAll = (data) => {
-        API.get('http://52.163.210.101:44000/apiRoute/Things/checkOnline')
+        API.get('apiRoute/Things/checkOnline', { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(async res => {
                 await data.map(meter =>
                     res.data.map(rec => {
@@ -334,12 +330,15 @@ const Layout = (props) => {
                     }))
                 await setMeters(data)
             }).catch(err => {
+                sessionStorage.removeItem('token');
+                localStorage.clear("token")
+                props.history.push("/login")
                 console.log("err", err)
 
             })
     }
     const InquiryGraph = (data) => {
-        API.get('http://52.163.210.101:44000/apiRoute/Things/InquiryGrahp?IMEI=' + data)
+        API.get('apiRoute/Things/InquiryGrahp?IMEI=' + data, { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(async res => {
                 res.data.created = res.data.created.map(d => new Date(d).getTime())
                 let datav1 = []
@@ -367,6 +366,9 @@ const Layout = (props) => {
                 await setActiveEnergy(datavKWH_LP)
                 await setReactiveEnergy(datavKVARH_LP)
             }).catch(err => {
+                sessionStorage.removeItem('token');
+                localStorage.clear("token")
+                props.history.push("/login")
                 console.log("err", err)
 
             })
@@ -390,46 +392,58 @@ const Layout = (props) => {
         }
     }
     const inquiryDataAvailability = () => {
-        API.get('http://52.163.210.101:44000/dataAVA/dataAvailability')
+        API.get('dataAVA/dataAvailability', { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(res => {
                 setDataAvailability(res.data.value)
             })
             .catch(err => {
+                sessionStorage.removeItem('token');
+                localStorage.clear("token")
+                props.history.push("/login")
                 setLoad(true)
             })
     }
 
     const inquirySystemAvailability = () => {
-        API.get('http://52.163.210.101:44000/dataAVA/systemAvailability')
+        API.get('dataAVA/systemAvailability', { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(res => {
                 setSystemAvailability(res.data.value)
             })
             .catch(err => {
+                sessionStorage.removeItem('token');
+                localStorage.clear("token")
+                props.history.push("/login")
                 setLoad(true)
             })
     }
     const inquiryallActivePower = () => {
-        API.get('http://52.163.210.101:44000/dataAVA/allActivePower')
+        API.get('dataAVA/allActivePower', { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(res => {
                 setActivePower(res.data.value)
             })
             .catch(err => {
+                sessionStorage.removeItem('token');
+                localStorage.clear("token")
+                props.history.push("/login")
                 setLoad(true)
             })
     }
     const inquiryallActiveEnergy = () => {
-        API.get('http://52.163.210.101:44000/dataAVA/allActiveEnergy')
+        API.get('dataAVA/allActiveEnergy', { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(async res => {
                 setAllActiveEnergy(res.data.value)
             })
             .catch(err => {
+                sessionStorage.removeItem('token');
+                localStorage.clear("token")
+                props.history.push("/login")
                 setLoad(true)
             })
     }
     const openMeterDetail = async (meter) => {
         await setPageLoading(true)
         await clearInterval(meterDetailFlag)
-        API.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
+        API.get('apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI, { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(async res => {
                 if (res.data?.created) {
                     let date1m = new Date(res.data.created).getTime()
@@ -456,7 +470,7 @@ const Layout = (props) => {
 
             })
         var myVar = setInterval(function () {
-            API.get('http://52.163.210.101:44000/apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI)
+            API.get('apiRoute/Things/InquirySensors?IMEI=' + meter.MeterIMEI, { headers: { 'x-access-token': localStorage.getItem('token') } })
                 .then(async res => {
                     if (res.data?.created) {
                         let date1m = new Date(res.data.created)
@@ -480,7 +494,7 @@ const Layout = (props) => {
     }
     const searchHistiry = () => {
         setLoadingTable(true)
-        API.get('http://52.163.210.101:44000/apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString() + "&&" + "endDate=" + new Date(endDate).toISOString())
+        API.get('apiRoute/Things/history?' + "tranformerID=" + TranformerIDReport + "&&" + "MeterID=" + MeterIDReport + "&&" + "startDate=" + new Date(new Date(startDate).setHours(0, 0, 0, 0)).toISOString() + "&&" + "endDate=" + new Date(endDate).toISOString(), { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(async res => {
                 res.data.history.map(item => {
                     return (
@@ -505,7 +519,9 @@ const Layout = (props) => {
                 setLoadingTable(false)
             })
             .catch(err => {
-                console.log(err)
+                sessionStorage.removeItem('token');
+                localStorage.clear("token")
+                props.history.push("/login")
             })
     }
     const renderCSV = props => {
