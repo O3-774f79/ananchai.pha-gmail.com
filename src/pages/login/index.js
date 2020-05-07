@@ -3,7 +3,7 @@ import logoLogin from '../../img/logo-login.jpg'
 import bgLogin from '../../img/BG-login.jpg'
 import { Redirect } from 'react-router-dom'
 import { message, Spin } from 'antd';
-import axios from 'axios'
+import API from '../../helper';
 const error = () => {
     message.error('กรุณาตรวจสอบ username และ password');
 };
@@ -15,8 +15,7 @@ const Login = props => {
     const handleSubmit = (event) => {
         setLoading(true)
         event.preventDefault();
-        // axios.post('http://localhost:44000/api/User/authenticate',
-        axios.post('http://52.163.210.101:44000/api/User/authenticate',
+        API.post('api/User/authenticate',
             { "email": username, "password": password }
         ).then(resp => {
             localStorage.setItem("token", resp.data.token)
