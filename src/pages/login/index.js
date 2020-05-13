@@ -4,8 +4,13 @@ import bgLogin from '../../img/BG-login.jpg'
 import { Redirect } from 'react-router-dom'
 import { message, Spin } from 'antd';
 import API from '../../helper';
-const error = () => {
-    message.error('กรุณาตรวจสอบ username และ password');
+
+const error = (data) => {
+    if (data) {
+        message.error(data);
+    } else {
+        message.error('กรุณาตรวจสอบ username และ password');
+    }
 };
 const Login = props => {
     const [login, setLogin] = useState(false)
@@ -26,9 +31,13 @@ const Login = props => {
             setLogin(true)
             setLoading(false)
         }).catch(async err => {
+            if (err.response.status === 429) {
+                error(err.response.data)
+            } else {
+                error()
+            }
             await setUsername("")
             await setPassword("")
-            await error()
             await setLoading(false)
         })
     }
