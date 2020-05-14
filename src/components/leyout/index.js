@@ -91,12 +91,12 @@ const Layout = (props) => {
                     { title: 'RateType', label: 'Rate Type', key: 'RateType', dataIndex: "RateType", status: true },
                     { title: 'Location', label: 'Location', key: 'Location', dataIndex: "Location", status: true },
                     { title: 'Date/Time', label: 'Date/Time', key: 'created', dataIndex: "created", status: true },
-                    { title: 'Voltage L1', label: 'Voltage L1', key: 'Sensors.V1', dataIndex: "V1", status: true },
-                    { title: 'Voltage L2', label: 'Voltage L2', key: 'Sensors.V2', dataIndex: "V2", status: true },
-                    { title: 'Voltage L3', label: 'Voltage L3', key: 'Sensors.V3', dataIndex: "V3", status: true },
-                    { title: 'Active power', label: 'Active power', key: 'Sensors.KW', dataIndex: "KW", status: true },
-                    { title: 'Reactive power', label: 'Reactive power', key: 'Sensors.KVAR', dataIndex: "KVAR", status: true },
-                    { title: 'Active energy', label: 'Active energy', key: 'Sensors.KWH', dataIndex: "KWH", status: true },
+                    { title: 'Voltage L1', label: 'Voltage L1', key: 'Sensors.V1_LP', dataIndex: "V1", status: true },
+                    { title: 'Voltage L2', label: 'Voltage L2', key: 'Sensors.V2_LP', dataIndex: "V2", status: true },
+                    { title: 'Voltage L3', label: 'Voltage L3', key: 'Sensors.V3_LP', dataIndex: "V3", status: true },
+                    { title: 'Active power', label: 'Active power', key: 'Sensors.KW_LP', dataIndex: "KW", status: true },
+                    { title: 'Reactive power', label: 'Reactive power', key: 'Sensors.KVAR_LP', dataIndex: "KVAR", status: true },
+                    { title: 'Active energy', label: 'Active energy', key: 'Sensors.KWH_LP', dataIndex: "KWH", status: true },
                     { title: 'Reactive energy', label: 'Reactive energy', key: 'Sensors.KVARH', dataIndex: "KVARH", status: true },
                 ])
                 await setLoad(true);
