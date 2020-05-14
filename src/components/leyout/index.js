@@ -97,7 +97,7 @@ const Layout = (props) => {
                     { title: 'Active power', label: 'Active power', key: 'Sensors.KW_LP', dataIndex: "KW", status: true },
                     { title: 'Reactive power', label: 'Reactive power', key: 'Sensors.KVAR_LP', dataIndex: "KVAR", status: true },
                     { title: 'Active energy', label: 'Active energy', key: 'Sensors.KWH_LP', dataIndex: "KWH", status: true },
-                    { title: 'Reactive energy', label: 'Reactive energy', key: 'Sensors.KVARH', dataIndex: "KVARH", status: true },
+                    { title: 'Reactive energy', label: 'Reactive energy', key: 'Sensors.KVARH_LP', dataIndex: "KVARH", status: true },
                 ])
                 await setLoad(true);
                 InquirySensorAll(data)
