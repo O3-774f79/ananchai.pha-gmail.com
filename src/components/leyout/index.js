@@ -57,6 +57,7 @@ const Layout = (props) => {
     const [ReactivePower, setReactivePower] = useState([])
     const [ActiveEnergy, setActiveEnergy] = useState([])
     const [ReactiveEnergy, setReactiveEnergy] = useState([])
+    const [RSSI, setRSSI] = useState([])
     const [load, setLoad] = useState(false);
     const [error, setError] = useState('');
     const [zoom, setZoom] = useState(11)
@@ -317,6 +318,56 @@ const Layout = (props) => {
             enabled: false
         }, responsive: true
     }
+    const RSSIOption = {
+        chart: {
+            type: "spline",
+            zoomType: 'x'
+        },
+        time: {
+            timezoneOffset: -420
+        },
+        title: {
+            text: ""
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: '%e  %b'
+            },
+            min: new Date(startDateSet).getTime(),
+            max: new Date(endDateSet).getTime()
+        },
+        yAxis: {
+            title: {
+                text: "Receive Signal Strength Indicator (RSSI)"
+            }
+        },
+        plotOptions: {
+            spline: {
+                lineWidth: 3,
+                states: {
+                    hover: {
+                        lineWidth: 4
+                    }
+                },
+                marker: {
+                    enabled: false
+                },
+            }
+        },
+        series: [
+            {
+                name: 'RSSI',
+                data: RSSI,
+                color: "#BF00FF",
+                tooltip: {
+                    valueSuffix: "dBm"
+                },
+            },
+        ], credits: {
+            enabled: false
+        }, responsive: true
+    }
     const onCheckTableHeader = async (data) => {
         await headerTable.forEach((v1, i1) => data.includes(v1.title) ? headerTable[i1].status = true : headerTable[i1].status = false)
         await setHeaderTable([])
@@ -341,6 +392,9 @@ const Layout = (props) => {
     const InquiryGraph = (data) => {
         API.get('apiRoute/Things/InquiryGrahp?IMEI=' + data, { headers: { 'x-access-token': localStorage.getItem('token') } })
             .then(async res => {
+                console.log("####################")
+                console.log(res)
+                console.log("@@@@@@@@@@@@@@@@@@@@")
                 res.data.created = res.data.created.map(d => new Date(d).getTime())
                 let datav1 = []
                 let datav2 = []
@@ -349,7 +403,7 @@ const Layout = (props) => {
                 let datavKVAR_LP = []
                 let datavKWH_LP = []
                 let datavKVARH_LP = []
-
+                let dataRSSI = []
                 await res.data.created.forEach((date, i) => {
                     datav1.push([date, res.data.V1_LP[i]])
                     datav2.push([date, res.data.V2_LP[i]])
@@ -358,6 +412,7 @@ const Layout = (props) => {
                     datavKVAR_LP.push([date, res.data.KVAR_LP[i]])
                     datavKWH_LP.push([date, res.data.KWH_LP[i]])
                     datavKVARH_LP.push([date, res.data.KVARH_LP[i]])
+                    dataRSSI.push([date, res.data.RSSI[i]])
                 })
                 await setGraphV1(datav1)
                 await setGraphV2(datav2)
@@ -366,6 +421,7 @@ const Layout = (props) => {
                 await setReactivePower(datavKVAR_LP)
                 await setActiveEnergy(datavKWH_LP)
                 await setReactiveEnergy(datavKVARH_LP)
+                await setRSSI(dataRSSI)
             }).catch(err => {
                 sessionStorage.removeItem('token');
                 localStorage.clear("token")
@@ -908,7 +964,7 @@ const Layout = (props) => {
                                         width: "100%", height: 400, display: "block", alignContent: 'center'
                                     }}
                                     highcharts={Highcharts}
-                                    options={EnergyOptions}
+                                    options={RSSIOption}
                                 />
                             </div>
                         </div>
