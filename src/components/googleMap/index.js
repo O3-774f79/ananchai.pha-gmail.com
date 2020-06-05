@@ -18,13 +18,13 @@ const MapWithAMarkerClusterer = compose(
                 return (
                     {
                         meterId: props.rb ? props.rb.target.offsetParent.title : props.tb.target.offsetParent.title,
-                        isOpen: !isOpen,
+                        isOpen: true,
                     }
                 )
             },
             onToggleClose: ({ isOpen }) => (props) => {
                 return (
-                    { isOpen: !isOpen }
+                    { isOpen: false }
                 )
             }
         }),
