@@ -39,8 +39,8 @@ const Layout = (props) => {
     const [MeterIDReport, setMeterIDReport] = useState(0)
     const [MeterSetReport, setMeterSetReport] = useState([])
     const [headerTable, setHeaderTable] = useState([])
-    const [tableHeader, setTableHeader] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
-    const [tableHeaderSet, setTableHeaderSet] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy'])
+    const [tableHeader, setTableHeader] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy', 'RSSI'])
+    const [tableHeaderSet, setTableHeaderSet] = useState(["TransformerID", "MeterID", 'MeterType', 'RateType', 'Location', 'Date/Time', 'Voltage L1', 'Voltage L2', 'Voltage L3', 'Active power', 'Reactive power', 'Active energy', 'Reactive energy', 'RSSI'])
     const [dataExport, setDataExport] = useState([])
     const [pageLoadingMain, setpageLoadingMain] = useState(false)
     const [dataAvailability, setDataAvailability] = useState(0)
@@ -98,6 +98,7 @@ const Layout = (props) => {
                     { title: 'Reactive power', label: 'Reactive power', key: 'Sensors.KVAR', dataIndex: "KVAR", status: true },
                     { title: 'Active energy', label: 'Active energy', key: 'Sensors.KWH', dataIndex: "KWH", status: true },
                     { title: 'Reactive energy', label: 'Reactive energy', key: 'Sensors.KVARH', dataIndex: "KVARH", status: true },
+                    { title: 'RSSI', label: 'RSSI', key: 'RSSI', dataIndex: "RSSI", status: true }
                 ])
                 await setLoad(true);
                 InquirySensorAll(data)
@@ -502,7 +503,7 @@ const Layout = (props) => {
                         item["MeterID"] = res.data.thingDetail.MeterID,
                         item["MeterType"] = res.data.thingDetail.MeterType,
                         item["RateType"] = res.data.thingDetail.RateType,
-                        item["Location"] = res.data.thingDetail.Location[0] + "," + res.data.thingDetail.Location[1],
+                        item["Location"] = res.data.thingDetail.Location[0] + "  ," + res.data.thingDetail.Location[1],
                         item["TranfomerID"] = TranformerIDReport,
                         item["V1"] = item.Sensors.V1_LP,
                         item["V2"] = item.Sensors.V2_LP,
@@ -511,6 +512,7 @@ const Layout = (props) => {
                         item["KW"] = item.Sensors.KW_LP,
                         item["KWH"] = item.Sensors.KWH_LP,
                         item["KVARH"] = item.Sensors.KVARH_LP,
+                        item["RSSI"] = item.Sensors.RSSI,
                         item["created"] = new Date(new Date(item.created).toLocaleString("en-US", { timeZone: "Asia/Bangkok" })).toLocaleString() //new Date(item.created)
                     )
                 }
@@ -889,6 +891,15 @@ const Layout = (props) => {
                                     }}
                                     highcharts={Highcharts}
                                     options={loadprofileOptions}
+                                />
+                            </div>
+                            <div style={{ width: '100%' }}>
+                                <HighchartsReact
+                                    style={{
+                                        width: "100%", height: 400, display: "block", alignContent: 'center'
+                                    }}
+                                    highcharts={Highcharts}
+                                    options={EnergyOptions}
                                 />
                             </div>
                             <div style={{ width: '100%' }}>
